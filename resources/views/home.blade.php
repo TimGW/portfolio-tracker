@@ -1,14 +1,10 @@
 @extends('layouts.app')
 
-@section('content')
+@push('css')
+	<link href="https://cdn.datatables.net/1.10.23/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+@endpush
 
-<script>
-    $(document).ready(function() {
-        $('#data-table-responsive').DataTable({
-            responsive: true
-        });
-    });
-</script>
+@section('content')
 
 <div class="container">
     <div class="row">
@@ -38,21 +34,28 @@
                 <div class="card-header">{{ __('Tabel') }}</div>
 
                 <div class="card-body">
-                    <table id="data-table-responsive" class="table table-bordered table-striped">
+                    <table id="data-table-responsive" class="table">
                         <thead>
                             <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">First</th>
-                                <th scope="col">Last</th>
-                                <th scope="col">Handle</th>
+                                <th>Bedrijf</th>
+                                <th>Huidige waarde</th>
+                                <th>Koers</th>
+                                <th>Aantal</th>
+                                <th>Winst / Verlies</th>
+                                <th></th>
+                                <th>Gewicht</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @for ($i = 0; $i < 100; $i++) <tr>
-                                <th scope="row">{{$i}}</th>
-                                <td>Mark</td>
-                                <td>Otto</td>
-                                <td>@mdo</td>
+                            @for ($i = 0; $i < 100; $i++) 
+                                <tr>
+                                    <td>{{$i}} Apple</td>
+                                    <td>€ 2000</td>
+                                    <td>€ 1000</td>
+                                    <td>@mdo</td>
+                                    <td>@mdo</td>
+                                    <td>@mdo</td>
+                                    <td>@mdo</td>
                                 </tr>
                             @endfor
                         </tbody>
@@ -66,5 +69,6 @@
 @endsection
 
 @push('scripts')
-    <script src="/js/portfolio-chart.js"></script>
+<script src="/js/portfolio-chart.js"></script>
+<script src="/js/portfolio-datatable.js"></script>
 @endpush
