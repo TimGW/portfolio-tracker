@@ -11,10 +11,31 @@
 </script>
 
 <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-xl-10">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header">{{ __('Sectorverdeling') }}</div>
+
+                <div class="card-body">
+                    <canvas id="doughnut-chart" data-render="chart-js"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
+
+                <div class="card-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-xl-12">
+            <div class="card">
+                <div class="card-header">{{ __('Tabel') }}</div>
 
                 <div class="card-body">
                     <table id="data-table-responsive" class="table table-bordered table-striped">
@@ -33,7 +54,7 @@
                                 <td>Otto</td>
                                 <td>@mdo</td>
                                 </tr>
-                                @endfor
+                            @endfor
                         </tbody>
                     </table>
                 </div>
@@ -41,4 +62,9 @@
         </div>
     </div>
 </div>
+
 @endsection
+
+@push('scripts')
+    <script src="/js/portfolio-chart.js"></script>
+@endpush
