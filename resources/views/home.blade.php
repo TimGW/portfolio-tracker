@@ -37,27 +37,25 @@
                     <table id="data-table-responsive" class="table">
                         <thead>
                             <tr>
-                                <th>Bedrijf</th>
-                                <th>Huidige waarde</th>
-                                <th>Koers</th>
+                                <th>Product</th>
+                                <th>Symbool / ISIN</th>
                                 <th>Aantal</th>
-                                <th>Winst / Verlies</th>
-                                <th></th>
-                                <th>Gewicht</th>
+                                <th>Slotkoers</th>
+                                <th>Lokale waarde</th>
+                                <th>Waarde in EUR</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @for ($i = 0; $i < 100; $i++) 
+                            @foreach ($stocks as $stock)
                                 <tr>
-                                    <td>{{$i}} Apple</td>
-                                    <td>€ {{2000 * $i}}</td>
-                                    <td>€ 1000</td>
-                                    <td>{{$i + $i}}</td>
-                                    <td>{{$i}}</td>
-                                    <td></td>
-                                    <td>{{$i}}</td>
+                                    <td>{{$stock->product}}</td>
+                                    <td>{{$stock->symbol_isin}}</td>
+                                    <td>{{$stock->quantity}}</td>
+                                    <td>{{$stock->closing_price}}</td>
+                                    <td>{{$stock->local_value}}</td>
+                                    <td>{{$stock->value_in_euros}}</td>
                                 </tr>
-                            @endfor
+                            @endforeach
                         </tbody>
                     </table>
                 </div>

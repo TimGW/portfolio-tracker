@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Stock;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithStartRow;
+use Illuminate\Support\Facades\Auth;
 
 class DeGiroDataImport implements ToModel, WithStartRow
 {
@@ -22,6 +23,7 @@ class DeGiroDataImport implements ToModel, WithStartRow
             'closing_price'    => $row[3],
             'local_value'    => $row[4],
             'value_in_euros'    => $row[5],
+            'user_id'    => Auth::id(),
         ]);
     }
 

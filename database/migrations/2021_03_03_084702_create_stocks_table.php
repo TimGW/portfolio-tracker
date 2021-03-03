@@ -21,6 +21,7 @@ class CreateStocksTable extends Migration
             $table->text('local_value', 255)->nullable();
             $table->text('value_in_euros', 255)->nullable();
             $table->timestamps();
+            $table->foreignId('user_id')->constrained('users');
         });
     }
 

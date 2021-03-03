@@ -1,18 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Repositories\StocksRepository;
 
 class HomeController extends Controller
 {
+    protected $stocksRepository;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(StocksRepository $stocksRepository)
     {
+        $this->stocksRepository = $stocksRepository;
         $this->middleware('auth');
     }
 
@@ -23,6 +26,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('home');
+        $stocks = $this->stocksRepository->getForUser(Auth::id());
+        return view('home', compact('stocks'));
     }
 }
