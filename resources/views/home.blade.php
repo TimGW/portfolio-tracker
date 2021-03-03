@@ -31,7 +31,7 @@
     <div class="row mt-3">
         <div class="col-xl-12">
             <div class="card">
-                <div class="card-header">{{ __('Tabel') }}</div>
+                <div class="card-header">{{ __('Aandelen') }}</div>
 
                 <div class="card-body">
                     <table id="data-table-responsive" class="table">
