@@ -1,5 +1,5 @@
 var doughnutChartData = {
-    labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+    labels: ['Tesla', 'Apple', 'Aplhabet', 'KPN', 'Purple', 'ING'],
     datasets: [{
         label: '# of Votes',
         data: [12, 19, 3, 5, 2, 3],

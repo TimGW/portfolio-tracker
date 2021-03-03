@@ -50,12 +50,12 @@
                             @for ($i = 0; $i < 100; $i++) 
                                 <tr>
                                     <td>{{$i}} Apple</td>
-                                    <td>€ 2000</td>
+                                    <td>€ {{2000 * $i}}</td>
                                     <td>€ 1000</td>
-                                    <td>@mdo</td>
-                                    <td>@mdo</td>
-                                    <td>@mdo</td>
-                                    <td>@mdo</td>
+                                    <td>{{$i + $i}}</td>
+                                    <td>{{$i}}</td>
+                                    <td></td>
+                                    <td>{{$i}}</td>
                                 </tr>
                             @endfor
                         </tbody>

@@ -57,8 +57,14 @@
                         </li>
                         @endif
                         @else
+
                         <li class="nav-item dropdown">
-                            <a class="btn btn-primary mr-3" href="#" role="button">Import</a>
+                            <form id="import-data" action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
+                                <label class="btn btn-primary mr-3" >
+                                    Import <input type="file" name="file" class="form-control" onchange="this.form.submit()" hidden>
+                                </label>
+                                @csrf
+                            </form>  
                         </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
