@@ -8,7 +8,7 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-6 mt-3">
             <div class="card">
                 <div class="card-header">{{ __('Sectorverdeling') }}</div>
 
@@ -17,7 +17,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 mt-3">
             <div class="card">
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
