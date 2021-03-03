@@ -4,30 +4,32 @@ namespace App\Imports;
 
 use App\Models\Stock;
 use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\WithStartRow;
 
-class DeGiroDataImport implements ToModel, WithHeadingRow
+class DeGiroDataImport implements ToModel, WithStartRow
 {
     /**
-    * @param array $row
-    *
-    * @return \Illuminate\Database\Eloquent\Model|null
-    */
+     * @param array $row
+     *
+     * @return \Illuminate\Database\Eloquent\Model|null
+     */
     public function model(array $row)
     {
         return new Stock([
-            'product'     => $row['product'],
-            'symbol'    => $row['symbol'], 
-            'isin'    => $row['isin'], 
-            'quantity'    => $row['quantity'], 
-            'closing_price'    => $row['closing_price'], 
-            'local_value'    => $row['local_value'], 
-            'value_in_euros'    => $row['value_in_euros'], 
+            'product'     => $row[0],
+            'symbol_isin'    => $row[1],
+            'quantity'    => $row[2],
+            'closing_price'    => $row[3],
+            'local_value'    => $row[4],
+            'value_in_euros'    => $row[5],
         ]);
     }
 
-    public function headingRow(): int
+    /**
+     * @return int
+     */
+    public function startRow(): int
     {
-        return 1;
+        return 2;
     }
 }

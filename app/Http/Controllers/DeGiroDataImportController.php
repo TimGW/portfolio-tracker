@@ -10,7 +10,7 @@ class DeGiroDataImportController extends Controller
 
     public function import()
     {
-        Excel::import(new DeGiroDataImport, request()->file('file')->store('temp'));
+        Excel::import(new DeGiroDataImport, request()->file('file'));
 
         return back();
     }

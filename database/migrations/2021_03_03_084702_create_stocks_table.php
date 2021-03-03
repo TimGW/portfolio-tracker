@@ -14,13 +14,12 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->text('product', 255);
-            $table->text('symbol', 255)->nullable();
-            $table->text('isin', 255);
-            $table->text('quantity', 255);
-            $table->text('closing_price', 255);
-            $table->text('local_value', 255);
-            $table->text('value_in_euros', 255);
+            $table->text('product', 255)->nullable();
+            $table->text('symbol_isin', 255)->nullable();
+            $table->text('quantity', 255)->nullable();
+            $table->text('closing_price', 255)->nullable();
+            $table->text('local_value', 255)->nullable();
+            $table->text('value_in_euros', 255)->nullable();
             $table->timestamps();
         });
     }
