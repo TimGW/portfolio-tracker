@@ -20,41 +20,41 @@
         <div class="col-lg-6">
             <div class="row row-cols-1 row-cols-md-2 g-4">
                 <div class="col mt-3">
-                     <div class="card h-100 text-center">
-                <div class="card-header">{{ __('Balans') }}</div>
-                     
+                    <div class="card h-100 text-center">
+                        <div class="card-header">{{ __('Balans') }}</div>
+
                         <div class="card-body">
                             <h3 class="card-title">€ 10000</h3>
-                           
+
                         </div>
                     </div>
                 </div>
                 <div class="col mt-3">
-                     <div class="card h-100 text-center">
-                <div class="card-header">{{ __('Groei') }}</div>
+                    <div class="card h-100 text-center">
+                        <div class="card-header">{{ __('Groei') }}</div>
 
                         <div class="card-body">
                             <h3 class="card-title">- 2,5%</h3>
-                           
+
                         </div>
                     </div>
                 </div>
                 <div class="col mt-3">
-                     <div class="card h-100 text-center">
-                <div class="card-header">{{ __('Gemiddeld dividend') }}</div>
+                    <div class="card h-100 text-center">
+                        <div class="card-header">{{ __('Gemiddeld dividend') }}</div>
 
                         <div class="card-body">
-                            <h3 class="card-title">+ 3,07%</h3> 
+                            <h3 class="card-title">+ 3,07%</h3>
                         </div>
                     </div>
                 </div>
                 <div class="col mt-3">
-                     <div class="card h-100 text-center">
-                <div class="card-header">{{ __('Jaarlijks inkomen') }}</div>
+                    <div class="card h-100 text-center">
+                        <div class="card-header">{{ __('Jaarlijks inkomen') }}</div>
 
                         <div class="card-body">
                             <h3 class="card-title">€ 500</h3>
-                        
+
                         </div>
                     </div>
                 </div>
@@ -103,4 +103,16 @@
 @push('scripts')
 <script src="/js/portfolio-chart.js"></script>
 <script src="/js/portfolio-datatable.js"></script>
+
+<script>
+    $(document).ready(
+        setData(
+            {!! json_encode($chart->labels) !!}, 
+            {!! json_encode($chart->dataset) !!},
+            {!! json_encode($chart->colours)!!}
+        )
+    )
+</script>
+
 @endpush
+
