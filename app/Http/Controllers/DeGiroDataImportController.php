@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Imports\DeGiroDataImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class DeGiroDataImportController extends Controller
 {
@@ -19,6 +21,12 @@ class DeGiroDataImportController extends Controller
 
     public function import()
     {
+        // remove current entries
+        DB::table('stocks')
+            ->where('user_id', '=', Auth::id())
+            ->delete();
+
+        // import new entries
         Excel::import(new DeGiroDataImport, request()->file('file'));
 
         return back();
