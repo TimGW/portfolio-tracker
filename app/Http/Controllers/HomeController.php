@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Stock;
+use App\Models\Ticker;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Chart;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use App\Imports\StockDataMapper;
-use App\Imports\ChartBuilder;
 
 class HomeController extends Controller
 {
@@ -21,7 +21,6 @@ class HomeController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->stockDataMapper = new StockDataMapper;
     }
 
     /**
@@ -31,37 +30,47 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $transactions = $this->fetchItemsForUserGroupedByColumn("transactions", "isin");
+        $allTransactions = $this->fetchItemsForUserGroupedByColumn("transactions", "isin");
+        $stocks = array();
+        $totalPortfolioValue = 0;
 
-        $result = array();
-        foreach ($transactions as $key => $subarray) {
-            $sumOfQuantity = array_sum(array_column($subarray,'quantity'));
-            $gak = array_sum(array_column($subarray,'closing_rate')) / $sumOfQuantity;
-            $result[$key] = $gak;
+        $profiles = $this->getStockProfiles($allTransactions);
+
+        foreach ($allTransactions as $transactionsForShare) {
+            foreach ($profiles as $profile) {
+                if ($transactionsForShare[0]['isin'] === $profile['isin']) {
+                    $stock = new Stock($transactionsForShare, $profile['price']);
+                    $totalPortfolioValue += $stock->current_stock_value;
+                    $stocks[] = $stock;
+                }
+            }
         }
 
-        $quotes = $this->getStockQuotes($transactions);
-        $chart = new Chart($transactions);
+        foreach ($stocks as $stock) {
+            $stock->setWeight($totalPortfolioValue);
+        }
 
-        return view('home', compact('transactions', 'chart', 'quotes'));
+        $chart = new Chart($stocks);
+
+        return view('home', compact('stocks', 'chart'));
     }
 
-    private function getTickerSymbols($transactions)
+    private function createTickers($allTransactions): array
     {
-        $isins = array_column($transactions, 'symbol_isin');
+        $localTickers = array();
+        foreach ($allTransactions as $data) {
+            $localTickers[] = new Ticker($data[0]['isin'], $data[0]['exchange']);
+        }
 
         $requestBody = array();
-        foreach ($isins as $isin) {
-            if (str_contains($isin, "NL")){
-                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$isin", 'exchCode' => 'NA');
-            } elseif (str_contains($isin, "US")) {
-                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$isin", 'exchCode' => 'US');
+        foreach ($localTickers as $ticker) {
+            $exchCode = $ticker->bb_exchange;
+            if (!empty($exchCode)) {
+                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$ticker->isin", 'exchCode' => $exchCode);
             } else {
-                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$isin");
+                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$ticker->isin");
             }
-        };
-
-        $json = json_encode($requestBody);
+        }
 
         $tickerResponse = Http::withOptions([
             'debug' => false
@@ -69,44 +78,38 @@ class HomeController extends Controller
             'Content-Type' => 'text/json',
             'X-OPENFIGI-APIKEY' => env('OPEN_FIGI_KEY'),
         ])->withBody(
-            $json,
+            json_encode($requestBody),
             'text/json'
         )->post("https://api.openfigi.com/v1/mapping");
 
-        $tickerResult = $tickerResponse->getBody();
-        $tickerResult = json_decode($tickerResult, true);
-        $tickers = array();
+        $responseBody = $tickerResponse->getBody();
+        $responseDataSet = array_column(json_decode($responseBody, true), 'data');
 
-        $dataTickers = array_column($tickerResult, 'data');
-        foreach ($dataTickers as $item) {
-            $first = $item[0];
+        for ($x = 0; $x < count($localTickers); $x++) {
+            $objectData = $responseDataSet[$x][0];
 
-            if (str_contains($first['exchCode'], "NA")){
-                $tickers[] = $first['ticker'] . ".AS";
-            } else {
-                $tickers[] = $first['ticker'];
+            $localTicker = $localTickers[$x];
+            if (!$localTicker->isCommonStock($objectData['securityType'])) {
+                $localTicker->ticker = $objectData['ticker'] . "." . $localTickers[$x]->exch_appendix;
             }
         }
 
-        return $tickers;
+        return array_column($localTickers, 'ticker');
     }
 
-    public function getStockQuotes($transactions)
+    public function getStockProfiles($transactions)
     {
         $baseUrl = "https://financialmodelingprep.com/api/v3/";
 
-        $tickerSymbols = $this->getTickerSymbols($transactions);
-        $tickersCsv = implode(',', $tickerSymbols);
+        $tickers = implode(',', array_filter($this->createTickers($transactions)));
 
         $response = Http::withOptions([
             'debug' => false
-        ])->get($baseUrl . "quote/$tickersCsv", [
+        ])->get($baseUrl . "profile/$tickers", [
             'apikey' => env('AV_KEY')
         ]);
-        $result = $response->getBody();
-        $result = json_decode($result);
 
-        return $result;
+        return json_decode($response->getBody(), true);
     }
 
     function array_group(array $data, $by_column): array
