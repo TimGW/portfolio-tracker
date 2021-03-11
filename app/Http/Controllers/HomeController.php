@@ -84,13 +84,17 @@ class HomeController extends Controller
 
         $responseBody = $tickerResponse->getBody();
         $responseDataSet = array_column(json_decode($responseBody, true), 'data');
-
         for ($x = 0; $x < count($localTickers); $x++) {
             $objectData = $responseDataSet[$x][0];
 
             $localTicker = $localTickers[$x];
             if (!$localTicker->isCommonStock($objectData['securityType'])) {
-                $localTicker->ticker = $objectData['ticker'] . "." . $localTickers[$x]->exch_appendix;
+                $appendix = $localTickers[$x]->exch_appendix;
+                if (!empty($appendix)) {
+                    $localTicker->ticker = $objectData['ticker'] . "." . $appendix;
+                } else {
+                    $localTicker->ticker = $objectData['ticker'];
+                }
             }
         }
 
@@ -102,7 +106,6 @@ class HomeController extends Controller
         $baseUrl = "https://financialmodelingprep.com/api/v3/";
 
         $tickers = implode(',', array_filter($this->createTickers($transactions)));
-
         $response = Http::withOptions([
             'debug' => false
         ])->get($baseUrl . "profile/$tickers", [
