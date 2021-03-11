@@ -22,7 +22,7 @@ class DeGiroDataImportController extends Controller
     public function import()
     {
         // remove current entries
-        DB::table('stocks')
+        DB::table('transactions')
             ->where('user_id', '=', Auth::id())
             ->delete();
 

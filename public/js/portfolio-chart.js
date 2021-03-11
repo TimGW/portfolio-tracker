@@ -18,7 +18,11 @@ var handleChartJs = function () {
         data: doughnutChartData,
         options: {
             legend: {
-                position: 'right'
+                position: 'right',
+                labels: {
+                    usePointStyle: true,
+                    boxWidth: 6
+                  }
             }
         }
     });

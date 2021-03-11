@@ -5,7 +5,6 @@
 @endpush
 
 @section('content')
-
 <div class="container">
     <div class="row">
         <div class="col-lg-6 mt-3">
@@ -71,25 +70,16 @@
                     <table id="data-table-responsive" class="table">
                         <thead>
                             <tr>
-                                <th>Product</th>
-                                <th>Symbool / ISIN</th>
-                                <th>Aantal</th>
-                                <th>Slotkoers</th>
-                                <th>Lokale waarde</th>
-                                <th>Waarde in EUR</th>
+                                <th>Bedrijf</th>
+                                <th>Huidige waarde</th>
+                                <th>Koers</th>
+                                <th>Aantal shares</th>
+                                <th>Winst / Verlies</th>
+                                <th>Gewicht</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($stocks as $stock)
-                            <tr>
-                                <td>{{$stock->product}}</td>
-                                <td>{{$stock->symbol_isin}}</td>
-                                <td>{{$stock->quantity}}</td>
-                                <td>{{$stock->closing_price}}</td>
-                                <td>{{$stock->local_value}}</td>
-                                <td>{{$stock->value_in_euros}}</td>
-                            </tr>
-                            @endforeach
+
                         </tbody>
                     </table>
                 </div>
@@ -107,12 +97,11 @@
 <script>
     $(document).ready(
         setData(
-            {!! json_encode($chart->labels) !!}, 
-            {!! json_encode($chart->dataset) !!},
-            {!! json_encode($chart->colours)!!}
+            {!! json_encode($chart->labels, JSON_HEX_TAG) !!}, 
+            {!! json_encode($chart->dataset, JSON_HEX_TAG) !!},
+            {!! json_encode($chart->colours, JSON_HEX_TAG)!!}
         )
     )
 </script>
 
 @endpush
-
