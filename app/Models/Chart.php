@@ -29,7 +29,7 @@ class Chart extends Model
         $labels = array_unique(array_column($this->stocks, 'stock_sector'));
         $result = array();
         foreach ($labels as $value) {
-            $result[] = mb_strimwidth(strtolower($value), 0, 10, "...");
+            $result[] = mb_strimwidth(strtolower($value), 0, 20, "...");
         }
         return $result;
     }
