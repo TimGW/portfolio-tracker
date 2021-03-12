@@ -29,12 +29,12 @@ class HomeController extends Controller
     {
         $transactionRepository = new TransactionRepository();
         $allTransactions = $transactionRepository->fetchItemsForUserGroupedByColumn("isin");
+
         $stockRepository = new StockRepository($allTransactions);
+        $profiles = $stockRepository->getStockProfiles();
 
         $stocks = array();
         $totalPortfolioValue = 0;
-
-        $profiles = $stockRepository->getStockProfiles();
 
         foreach ($allTransactions as $transactionsForShare) {
             foreach ($profiles as $profile) {
@@ -51,7 +51,6 @@ class HomeController extends Controller
         }
 
         $chart = new Chart($stocks);
-
         return view('home', compact('stocks', 'chart'));
     }
 }

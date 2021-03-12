@@ -9,25 +9,24 @@ class Chart extends Model
 {
     use HasFactory;
 
-    private $transactions;
+    private $stocks;
 
     public $labels;
     public $dataset;
     public $colours;
 
-    public function __construct($transactions)
+    public function __construct($stocks)
     {
-        $this->transactions = $transactions;
+        $this->stocks = $stocks;
 
         $this->labels = $this->buildLabels();
         $this->dataset = $this->buildData();
         $this->colours = $this->buildColors();
     }
 
-    public function buildLabels()
+    private function buildLabels(): array
     {
-        $labels = array_column($this->transactions, 'product');
-
+        $labels = array_column($this->stocks, 'name');
         $result = array();
         foreach ($labels as $value) {
             $result[] = mb_strimwidth(strtolower($value), 0, 10, "...");
@@ -35,9 +34,9 @@ class Chart extends Model
         return $result;
     }
 
-    public function buildData()
+    private function buildData(): array
     {
-        $quantity = array_column($this->transactions, 'quantity');
+        $quantity = array_column($this->stocks, 'weight');
         $onePercent = array_sum($quantity) / 100;
 
         $result = array();
@@ -48,10 +47,10 @@ class Chart extends Model
         return $result;
     }
 
-    public function buildColors()
+    private function buildColors(): array
     {
         $result = array();
-        for ($i = 0; $i < count($this->transactions); $i++) {
+        for ($i = 0; $i < count($this->stocks); $i++) {
             $result[] = '#' . substr(str_shuffle('ABCDEF0123456789'), 0, 6);
         }
         return $result;
