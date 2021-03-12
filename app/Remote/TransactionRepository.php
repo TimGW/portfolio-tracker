@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class TransactionRepository
 {
 
-    public function fetchItemsForUserGroupedByColumn($column): array
+    public function allTransactionsForCurrentUserGroupedByColumn($column): array
     {
         $transactions = DB::table('transactions')
             ->where('user_id', '=', Auth::id())

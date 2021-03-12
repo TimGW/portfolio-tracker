@@ -9,31 +9,31 @@ class Stock extends Model
 {
     use HasFactory;
 
-    public $name;
-    public $volume;
-    public $price_ps_avg;
-    public $current_rate;
-    public $profit_ps;
-    public $profit_ps_percentage;
-    public $current_stock_value;
-    public $weight;
-    public $total_invested;
+    public $stock_name; // eigen input
+    public $volume_of_shares; // eigen input
+    public $ps_avg_price_purchased; // som van aankoopprijzen / volume
+    public $ps_current_value; // data financialmodelingprep
+    public $ps_profit; // (koers - gak ) * volume
+    public $ps_profit_percentage; // profit per share / (gak * volume)
+    public $stock_current_value; // waarde per aandeel * volume
+    public $stock_weight; // huidige waarde aandelen / totale waarde portfolio
+    public $stock_invested; // volume * gak
 
-    public function __construct($transactionsForShare, $current_rate)
+    public function __construct($transactionsForShare, $ps_current_value)
     {
-        $this->name = $transactionsForShare[0]['product'];
-        $this->volume = array_sum(array_column($transactionsForShare, 'quantity'));
-        $this->price_ps_avg = round(array_sum(array_column($transactionsForShare, 'closing_rate')) / $this->volume, 3);
-        $this->current_rate = round($current_rate, 3);
-        $this->profit_ps = round(($current_rate - $this->price_ps_avg) * $this->volume, 2);
-        $this->profit_ps_percentage = round(($this->profit_ps / ($this->price_ps_avg * $this->volume)) * 100,2);
-        $this->current_stock_value = round($this->current_rate * $this->volume, 2);
-        $this->total_invested = $this->volume * $this->price_ps_avg;
+        $this->stock_name = $transactionsForShare[0]['product'];
+        $this->volume_of_shares = array_sum(array_column($transactionsForShare, 'quantity'));
+        $this->ps_avg_price_purchased = round(array_sum(array_column($transactionsForShare, 'closing_rate')) / $this->volume_of_shares, 3);
+        $this->ps_current_value = round($ps_current_value, 3);
+        $this->ps_profit = round(($ps_current_value - $this->ps_avg_price_purchased) * $this->volume_of_shares, 2);
+        $this->ps_profit_percentage = round(($this->ps_profit / ($this->ps_avg_price_purchased * $this->volume_of_shares)) * 100,2);
+        $this->stock_current_value = round($this->ps_current_value * $this->volume_of_shares, 2);
+        $this->stock_invested = $this->volume_of_shares * $this->ps_avg_price_purchased;
     }
 
-    public function setWeight($total_portfolio_value)
+    public function setStockWeight($total_portfolio_value)
     {
-        $this->weight = round(($this->current_stock_value / $total_portfolio_value) * 100);
+        $this->stock_weight = round(($this->stock_current_value / $total_portfolio_value) * 100);
     }
 
 }

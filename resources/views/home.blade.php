@@ -23,7 +23,17 @@
                             <div class="card-header">{{ __('Balans') }}</div>
 
                             <div class="card-body">
-                                <h3 class="card-title">€ 10000</h3>
+                                <h3 class="card-title">€{{ $portfolio->total_current_value }}</h3>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col mt-3">
+                        <div class="card h-100 text-center">
+                            <div class="card-header">{{ __('Totaal winst/verlies') }}</div>
+
+                            <div class="card-body">
+                                <h3 class="card-title">€{{ $portfolio->total_profit }}</h3>
 
                             </div>
                         </div>
@@ -33,26 +43,16 @@
                             <div class="card-header">{{ __('Groei') }}</div>
 
                             <div class="card-body">
-                                <h3 class="card-title">- 2,5%</h3>
-
+                                <h3 class="card-title">{{ $portfolio->total_growth }}%</h3>
                             </div>
                         </div>
                     </div>
                     <div class="col mt-3">
                         <div class="card h-100 text-center">
-                            <div class="card-header">{{ __('Gemiddeld dividend') }}</div>
+                            <div class="card-header">{{ __('Totaal geinvesteerd') }}</div>
 
                             <div class="card-body">
-                                <h3 class="card-title">+ 3,07%</h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col mt-3">
-                        <div class="card h-100 text-center">
-                            <div class="card-header">{{ __('Jaarlijks inkomen') }}</div>
-
-                            <div class="card-body">
-                                <h3 class="card-title">€ 500</h3>
+                                <h3 class="card-title">€{{ $portfolio->total_invested }}</h3>
 
                             </div>
                         </div>
@@ -75,22 +75,22 @@
                                 <th>GAK</th>
                                 <th>Koers</th>
                                 <th>Winst / Verlies</th>
-                                <th></th>
+                                <th>%</th>
                                 <th>Waarde</th>
                                 <th>Gewicht</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach ($stocks as $stock)
+                            @foreach ($portfolio->stock_list as $stock)
                                 <tr>
-                                    <td>{{$stock->name}}</td>
-                                    <td>{{$stock->volume}}</td>
-                                    <td>{{$stock->price_ps_avg}}</td>
-                                    <td>{{$stock->current_rate}}</td>
-                                    <td>{{$stock->profit_ps}}</td>
-                                    <td>{{$stock->profit_ps_percentage}}</td>
-                                    <td>{{$stock->current_stock_value}}</td>
-                                    <td>{{$stock->weight}}</td>
+                                    <td>{{$stock->stock_name}}</td>
+                                    <td>{{$stock->volume_of_shares}}</td>
+                                    <td>€{{$stock->ps_avg_price_purchased}}</td>
+                                    <td>€{{$stock->ps_current_value}}</td>
+                                    <td>€{{$stock->ps_profit}}</td>
+                                    <td>{{$stock->ps_profit_percentage}}%</td>
+                                    <td>€{{$stock->stock_current_value}}</td>
+                                    <td data-order="{{$stock->stock_weight}}"><progress value="{{$stock->stock_weight}}" max="100"></progress></td>
                                 </tr>
                             @endforeach
                             </tbody>

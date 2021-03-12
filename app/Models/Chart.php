@@ -26,7 +26,7 @@ class Chart extends Model
 
     private function buildLabels(): array
     {
-        $labels = array_column($this->stocks, 'name');
+        $labels = array_column($this->stocks, 'stock_name');
         $result = array();
         foreach ($labels as $value) {
             $result[] = mb_strimwidth(strtolower($value), 0, 10, "...");
@@ -36,7 +36,7 @@ class Chart extends Model
 
     private function buildData(): array
     {
-        $quantity = array_column($this->stocks, 'weight');
+        $quantity = array_column($this->stocks, 'stock_weight');
         $onePercent = array_sum($quantity) / 100;
 
         $result = array();
