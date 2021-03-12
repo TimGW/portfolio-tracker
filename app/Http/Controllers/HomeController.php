@@ -31,6 +31,10 @@ class HomeController extends Controller
         $transaction_repository = new TransactionRepository();
         $all_transactions = $transaction_repository->allTransactionsForCurrentUserGroupedByColumn("isin");
 
+        if (empty($all_transactions)) {
+            return view('empty');
+        }
+
         $stock_repository = new StockRepository($all_transactions);
         $profiles = $stock_repository->getStockProfiles();
 

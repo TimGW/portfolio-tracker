@@ -81,7 +81,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @foreach ($portfolio->stock_list as $stock)
+                            @forelse ($portfolio->stock_list as $stock)
                                 <tr>
                                     <td>{{$stock->stock_name}}</td>
                                     <td>{{$stock->volume_of_shares}}</td>
@@ -90,9 +90,13 @@
                                     <td>€{{$stock->ps_profit}}</td>
                                     <td>{{$stock->ps_profit_percentage}}%</td>
                                     <td>€{{$stock->stock_current_value}}</td>
-                                    <td data-order="{{$stock->stock_weight}}"><progress value="{{$stock->stock_weight}}" max="100"></progress></td>
+                                    <td data-order="{{$stock->stock_weight}}">
+                                        <progress value="{{$stock->stock_weight}}" max="100"></progress>
+                                    </td>
                                 </tr>
-                            @endforeach
+                            @empty
+                                <tr>Geen data beschikbaar</tr>
+                            @endforelse
                             </tbody>
                         </table>
                     </div>
