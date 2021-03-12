@@ -72,10 +72,10 @@
                             <tr>
                                 <th>Bedrijf</th>
                                 <th>Aantal</th>
-                                <th>GAK</th>
+                                <th>Aankoop prijs (GAK)</th>
                                 <th>Koers</th>
-                                <th>Winst / Verlies</th>
-                                <th>%</th>
+                                <th>Winst</th>
+                                <th>Groei</th>
                                 <th>Waarde</th>
                                 <th>Gewicht</th>
                             </tr>

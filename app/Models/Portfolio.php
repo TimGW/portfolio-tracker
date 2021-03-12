@@ -35,7 +35,7 @@ class Portfolio extends Model
         foreach ($this->all_transactions as $transactionsForStock) {
             foreach ($this->profiles as $profile) {
                 if ($transactionsForStock[0]['isin'] === $profile['isin']) {
-                    $stock = new Stock($transactionsForStock, $profile['price']);
+                    $stock = new Stock($transactionsForStock, $profile);
                     $total_current_value += $stock->stock_current_value;
                     $stock_list[] = $stock;
                 }
