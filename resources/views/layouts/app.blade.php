@@ -64,7 +64,7 @@
                                     Import <input type="file" name="file" class="form-control" onchange="this.form.submit()" hidden>
                                 </label>
                                 @csrf
-                            </form>  
+                            </form>
                         </li>
                         <li class="nav-item dropdown">
                             <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
