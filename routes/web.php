@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Auth::routes([
-    'register' => false,
+    'register' => true,
     'login' => true,
     'reset' => false,
 ]);

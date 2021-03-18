@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Portfolio;
-use App\Models\Stock;
+use App\Builder\PortfolioBuilder;
 use App\Remote\StockRepository;
 use App\Models\Chart;
+use App\Remote\SymbolRepository;
 use App\Remote\TransactionRepository;
 
 class HomeController extends Controller
@@ -29,16 +29,18 @@ class HomeController extends Controller
     public function index()
     {
         $transaction_repository = new TransactionRepository();
-        $all_transactions = $transaction_repository->allTransactionsForCurrentUserGroupedByColumn("isin");
+        $transactions = $transaction_repository->allTransactionsForCurrentUserGroupedBy("isin");
 
-        if (empty($all_transactions)) {
+        if (empty($transactions)) {
             return view('empty');
         }
 
-        $stock_repository = new StockRepository($all_transactions);
-        $profiles = $stock_repository->getStockProfiles();
+        $stock_repository = new StockRepository($transactions);
+        $stock_repository->getStocks();
 
-        $portfolio = new Portfolio($profiles, $all_transactions);
+        $portfolio = new PortfolioBuilder();
+        $portfolio->build();
+
         $chart = new Chart($portfolio->stock_list);
 
         return view('home', compact('portfolio', 'chart'));

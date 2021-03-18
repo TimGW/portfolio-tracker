@@ -18,6 +18,11 @@ class DeGiroDataImport implements ToModel, WithStartRow
     public function model(array $row)
     {
         try {
+            $service_fee = 0.0;
+            if(($row[14]) != null) {
+                $service_fee = str_replace(',', '.', $row[14]);
+            }
+
             return new Transaction([
                 'purchased_date' => $row[0],
                 'purchased_time' => $row[1],
@@ -29,6 +34,7 @@ class DeGiroDataImport implements ToModel, WithStartRow
                 'closing_rate' => str_replace(',', '.', $row[7]),
                 'local_value' => str_replace(',', '.', $row[9]),
                 'value' => str_replace(',', '.', $row[11]),
+                'service_fee' => $service_fee,
                 'total' => str_replace(',', '.', $row[16]),
                 'currency' => $row[8],
                 'user_id' => Auth::id()

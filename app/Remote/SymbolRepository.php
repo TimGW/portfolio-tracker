@@ -6,9 +6,8 @@ namespace App\Remote;
 
 use Illuminate\Support\Facades\Http;
 
-class TickerRepository
+class SymbolRepository
 {
-
     private $allTransactions;
 
     public function __construct($allTransactions)
@@ -16,11 +15,10 @@ class TickerRepository
         $this->allTransactions = $allTransactions;
     }
 
-    public function getTickerList(): string
+    public function getTickerList(): array
     {
         $responseBody = $this->getRemoteTickers($this->allTransactions)->getBody();
-        $tickers = $this->mapRemoteResponse($responseBody);
-        return implode(',', array_filter($tickers));
+        return $this->mapRemoteResponse($responseBody);
     }
 
     private function buildRequestBody($allTransactions): array
@@ -60,14 +58,12 @@ class TickerRepository
         foreach ($responseDataSet as $data) {
             $remoteTickerObjectData = $data[0];
 
-            if (!$this->isCommonStock($remoteTickerObjectData['securityType'])) {
-                $appendix = $this->getAppendix($remoteTickerObjectData['exchCode']);
+            $appendix = $this->getAppendix($remoteTickerObjectData['exchCode']);
 
-                if (!empty($appendix)) {
-                    $result[] = $remoteTickerObjectData['ticker'] . "." . $appendix;
-                } else {
-                    $result[] = $remoteTickerObjectData['ticker'];
-                }
+            if (!empty($appendix) && (!$this->isCommonStock($remoteTickerObjectData['securityType']))) {
+                $result[] = $remoteTickerObjectData['ticker'] . "." . $appendix;
+            } else {
+                $result[] = $remoteTickerObjectData['ticker'];
             }
         }
 
@@ -79,6 +75,10 @@ class TickerRepository
         switch (strtoupper($giro_exchange)) {
             case "EAM":
                 return "NA";
+            case "EPA":
+                return "FP";
+            case "XET":
+                return "GY";
             case "NSY":
             case "NDQ":
                 return "US";
@@ -92,7 +92,11 @@ class TickerRepository
         switch (strtoupper($exchange)) {
             case "NA":
                 return "AS";
-            case "US":
+            case "FP":
+                return "PA";
+            case "GY":
+                return "DE";
+
             default:
                 return "";
         }

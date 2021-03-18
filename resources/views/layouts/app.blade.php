@@ -60,7 +60,7 @@
 
                         <li class="nav-item dropdown">
                             <form id="import-data" action="{{ route('import') }}" method="POST" enctype="multipart/form-data">
-                                <label class="btn btn-primary mr-3" >
+                                <label class="btn btn-dark mr-3" >
                                     Import <input type="file" name="file" class="form-control" onchange="this.form.submit()" hidden>
                                 </label>
                                 @csrf

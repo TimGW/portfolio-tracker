@@ -1,17 +1,24 @@
 var doughnutChartData = {}
 
-function setData(labels, data, colors) {
+const colorArray = [
+    '#075E54', '#128C7E', '#25D366', '#DCF8C6',
+    '#003B73', '#0074B7', '#60A3D9', '#BFD7ED',
+    '#721121', '#A5402D', '#F15156', '#FFC07F',
+];
+
+function setData(labels, data) {
     doughnutChartData = {
         labels: labels,
         datasets: [{
             data: data,
-            backgroundColor: colors,
+            backgroundColor: colorArray,
             borderWidth: 2
         }]
     }
 }
 
-var handleChartJs = function () {
+
+const handleChartJs = function () {
     var ctx = document.getElementById('doughnut-chart').getContext('2d');
     window.myDoughnut = new Chart(ctx, {
         type: 'doughnut',
@@ -22,13 +29,13 @@ var handleChartJs = function () {
                 labels: {
                     usePointStyle: true,
                     boxWidth: 6
-                  }
+                }
             }
         }
     });
 };
 
-var ChartJs = function () {
+const ChartJs = function () {
     "use strict";
     return {
         //main function
