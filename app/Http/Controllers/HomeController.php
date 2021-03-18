@@ -3,9 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Builder\PortfolioBuilder;
-use App\Remote\StockRepository;
 use App\Models\Chart;
-use App\Remote\SymbolRepository;
+use App\Remote\StockRepository;
 use App\Remote\TransactionRepository;
 
 class HomeController extends Controller
@@ -36,12 +35,9 @@ class HomeController extends Controller
         }
 
         $stock_repository = new StockRepository($transactions);
-        $stock_repository->getStocks();
+        $portfolio = $stock_repository->buildPortfolio();
 
-        $portfolio = new PortfolioBuilder();
-        $portfolio->build();
-
-        $chart = new Chart($portfolio->stock_list);
+        $chart = new Chart($portfolio->getStockList());
 
         return view('home', compact('portfolio', 'chart'));
     }

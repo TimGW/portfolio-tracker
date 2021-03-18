@@ -12,14 +12,14 @@
                     <div class="card text-center text-white bg-success">
                         <div class="card-body">
                             <p class="card-text">{{ __('Balans') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_current_value }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->getTotalCurrentValue() ?: 0 }}</h3>
                         </div>
                     </div>
                 @else
                     <div class="card text-center text-white bg-danger">
                         <div class="card-body">
                             <p class="card-text">{{ __('Balans') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_current_value }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->getTotalCurrentValue() ?: 0 }}</h3>
                         </div>
                     </div>
                 @endif
@@ -29,7 +29,7 @@
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Winst / Verlies') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_profit }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->getTotalProfit() ?: 0 }}</h3>
 
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Winst / Verlies') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_profit }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->getTotalProfit() ?: 0 }}</h3>
 
                         </div>
                     </div>
@@ -48,14 +48,14 @@
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Groei') }}</p>
-                            <h3 class="card-title">{{ $portfolio->total_growth }}%</h3>
+                            <h3 class="card-title">{{ $portfolio->getTotalGrowth() ?: 0 }}%</h3>
                         </div>
                     </div>
                 @else
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Groei') }}</p>
-                            <h3 class="card-title">{{ $portfolio->total_growth }}%</h3>
+                            <h3 class="card-title">{{ $portfolio->getTotalGrowth() ?: 0 }}%</h3>
                         </div>
                     </div>
                 @endif
@@ -65,14 +65,14 @@
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_invested }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->getTotalInvested() ?: 0 }}</h3>
                         </div>
                     </div>
                 @else
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_invested }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->getTotalInvested() ?: 0 }}</h3>
                         </div>
                     </div>
                 @endif
@@ -104,9 +104,10 @@
                         <table id="data-table-responsive" class="table table-hover">
                             <thead class="thead-dark">
                             <tr>
+                                <th class="no-sort"></th>
                                 <th>Bedrijf</th>
                                 <th>Aantal</th>
-                                <th>Aankoop prijs (GAK)</th>
+                                <th>GAK</th>
                                 <th>Koers</th>
                                 <th>Winst</th>
                                 <th>Groei</th>
@@ -116,8 +117,9 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @forelse ($portfolio->stock_list as $stock)
+                            @forelse ($portfolio->getStockList() as $stock)
                                 <tr>
+                                    <td class="text-center"><img height="20px" src="{{$stock['image']}}"></td>
                                     <td>{{$stock['stock_name']}}</td>
                                     <td>{{$stock['volume_of_shares']}}</td>
                                     <td>€{{$stock['ps_avg_price_purchased']}}</td>
