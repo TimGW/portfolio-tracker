@@ -60,7 +60,7 @@ class SymbolRepository
 
             $stock = new Stock;
             $stock->setIsin($isin);
-            $stock->setExchange($exchCode);
+            $stock->setExchange($transactionsForShare[0]['exchange']);
             $stock->setVolumeOfShares($volume_of_shares);
             $stock->setPsAvgPricePurchased($ps_avg_price_purchased);
             $stock->setServiceFees($total_service_fee);
@@ -77,9 +77,9 @@ class SymbolRepository
 
         for ($i = 0; $i < count($responseDataSet); $i++) {
             $remoteTickerObjectData = $responseDataSet[$i][0];
-            $appendix = $this->getAppendix($remoteTickerObjectData['exchCode']);
-
+            $appendix = $this->getAppendix($stocks[$i]->getExchange());
             $tickerSymbol = "";
+
             // skip adding ETF's to the ticker list
             if (!strcasecmp($remoteTickerObjectData['securityType'], "Common Stock")) {
                 if (!empty($appendix)) {
@@ -88,6 +88,7 @@ class SymbolRepository
                     $tickerSymbol = $remoteTickerObjectData['ticker'];
                 }
             }
+
             // map the imported transactions to a symbol
             $stocks[$i]->setStockTicker($tickerSymbol);
         }
@@ -137,13 +138,12 @@ class SymbolRepository
     private function getAppendix($exchange): string
     {
         switch (strtoupper($exchange)) {
-            case "NA":
+            case "EAM":
                 return "AS";
-            case "FP":
+            case "EPA":
                 return "PA";
-            case "GY":
+            case "XET":
                 return "DE";
-
             default:
                 return "";
         }

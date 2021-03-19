@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class TransactionRepository
 {
 
-    public function allTransactionsForCurrentUserGroupedBy(): array
+    public function allGroupedTransactionsForUser(): array
     {
         $transactions = DB::table('transactions')
             ->where('user_id', '=', Auth::id())

@@ -28,7 +28,7 @@ class HomeController extends Controller
     public function index()
     {
         $transaction_repository = new TransactionRepository();
-        $transactions = $transaction_repository->allTransactionsForCurrentUserGroupedBy("isin");
+        $transactions = $transaction_repository->allGroupedTransactionsForUser();
 
         if (empty($transactions)) {
             return view('empty');
