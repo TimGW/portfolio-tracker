@@ -29,40 +29,38 @@ class StockRepository
             $this->saveProfileData($profile);
         }
 
-        // calculate all portfolio indicators for seperate stocks
-        $pair = $this->buildStockList();
-        $stock_list = $pair[0];
+        $data_set = Stock::where('user_id', Auth::id())->get()->toArray();
+        $total_portfolio_value = $this->calculateTotalPortfolioValue($data_set);
+        $stock_list = $this->calculateStockIndicators($data_set, $total_portfolio_value);
+        return $this->calculatePortfolioIndicators($stock_list, $total_portfolio_value);
+    }
 
-        // calculate all global portfolio indicators
+    private function calculatePortfolioIndicators($stock_list, $total_portfolio_value): Portfolio
+    {
         $total_invested = array_sum(array_column($stock_list, 'stock_invested'));
         $total_profit = array_sum(array_column($stock_list, 'ps_profit'));
         $total_growth = round(($total_profit / $total_invested) * 100, 2);
-        $total_current_value = $pair[1];
 
-        return new Portfolio($stock_list, $total_invested, $total_profit, $total_growth, $total_current_value);
+        return new Portfolio($stock_list, $total_invested, $total_profit, $total_growth, $total_portfolio_value);
     }
 
-    private function buildStockList(): array
+    private function calculateTotalPortfolioValue($stock_list)
     {
         $total_portfolio_value = 0;
-        $stock_list = Stock::where('user_id', Auth::id())->get()->toArray();
-
-        // calculate current stock value and total portfolio value
         foreach ($stock_list as $key => $stock) {
-            $volume = $stock['volume_of_shares'];
-            $price = $stock['ps_current_value'];
-
-            // update stocklist with current stock value
-            $stock_list[$key]['stock_current_value'] = round($price * $volume, 2);
-            // keep track of total value for calculating weight
-            $total_portfolio_value += $stock_list[$key]['stock_current_value'];
+            $total_portfolio_value += round($stock['ps_current_value'] * $stock['volume_of_shares'], 2);
         }
+        return $total_portfolio_value;
+    }
 
+    private function calculateStockIndicators($stock_list, $total_portfolio_value): array
+    {
         foreach ($stock_list as $key => $stock) {
             $volume = $stock['volume_of_shares'];
             $gak = $stock['ps_avg_price_purchased'];
             $price = $stock['ps_current_value'];
 
+            $stock_list[$key]['stock_current_value'] = round($price * $volume, 2);
             $stock_list[$key]['ps_profit'] = round(($price - $gak) * $volume, 2);
             $stock_list[$key]['ps_profit_percentage'] = round(($stock_list[$key]['ps_profit'] / ($gak * $volume)) * 100, 2);
             $stock_list[$key]['stock_invested'] = $volume * $gak;
@@ -71,7 +69,7 @@ class StockRepository
             $this->saveFinancialData($stock);
         }
 
-        return array($stock_list, $total_portfolio_value);
+        return $stock_list;
     }
 
     private function getStockProfiles()
@@ -93,12 +91,12 @@ class StockRepository
         Stock::where('isin', $stock_profile['isin'])
             ->where('user_id', Auth::id())
             ->update([
-                'stock_name' => $stock_profile['companyName'],
-                'stock_sector' => $stock_profile['sector'],
-                'ps_current_value' => $stock_profile['price'],
-                'image' => $stock_profile['image']
-            ]
-        );
+                    'stock_name' => $stock_profile['companyName'],
+                    'stock_sector' => $stock_profile['sector'],
+                    'ps_current_value' => $stock_profile['price'],
+                    'image' => $stock_profile['image']
+                ]
+            );
     }
 
     private function saveFinancialData($stock)
