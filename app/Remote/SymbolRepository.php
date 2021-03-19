@@ -59,12 +59,12 @@ class SymbolRepository
             }
 
             $stock = new Stock;
-            $stock->isin = $isin;
-            $stock->exchange = $exchCode;
-            $stock->volume_of_shares = $volume_of_shares;
-            $stock->ps_avg_price_purchased = $ps_avg_price_purchased;
-            $stock->total_service_fee = $total_service_fee;
-            $stock->currency = $currency;
+            $stock->setIsin($isin);
+            $stock->setExchange($exchCode);
+            $stock->setVolumeOfShares($volume_of_shares);
+            $stock->setPsAvgPricePurchased($ps_avg_price_purchased);
+            $stock->setServiceFees($total_service_fee);
+            $stock->setCurrency($currency);
             $stocks[] = $stock;
         }
 
