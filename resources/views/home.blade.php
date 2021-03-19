@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="container">
-        <div class="row">
+        <div class="row row-cols-xl-4 row-cols-lg-4 row-cols-2">
             <div class="col mt-3">
                 @if($portfolio->total_current_value >= 0)
                     <div class="card text-center text-white bg-success">
