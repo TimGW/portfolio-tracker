@@ -88,6 +88,7 @@ class SymbolRepository
                     $tickerSymbol = $remoteTickerObjectData['ticker'];
                 }
             }
+            // map the imported transactions to a symbol
             $stocks[$i]->stock_ticker = $tickerSymbol;
         }
 
