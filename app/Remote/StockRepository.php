@@ -75,7 +75,8 @@ class StockRepository
     private function getStockProfiles()
     {
         $stocks = $this->symbolRepository->getStocksWithSymbols();
-        $formatted_tickers = implode(',', array_column($stocks, 'stock_ticker'));
+        $tickers = array_map(function($stock) { return $stock->getStockTicker();}, $stocks);
+        $formatted_tickers = implode(',', $tickers);
 
         $response = Http::withOptions([
             'debug' => false

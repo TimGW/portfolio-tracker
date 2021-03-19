@@ -89,11 +89,11 @@ class SymbolRepository
                 }
             }
             // map the imported transactions to a symbol
-            $stocks[$i]->stock_ticker = $tickerSymbol;
+            $stocks[$i]->setStockTicker($tickerSymbol);
         }
 
         return (array_filter($stocks, function ($value) {
-            return !empty($value->stock_ticker);
+            return !empty($value->getStockTicker());
         }));
     }
 
@@ -102,16 +102,16 @@ class SymbolRepository
         foreach ($stocks as $stock) {
             Stock::updateOrCreate(
                 [
-                    'stock_ticker' => $stock->stock_ticker,
+                    'stock_ticker' => $stock->getStockTicker(),
                     'user_id' => Auth::id()
                 ],
                 [
-                    'isin' => $stock->isin,
-                    'exchange' => $stock->exchange,
-                    'volume_of_shares' => $stock->volume_of_shares,
-                    'ps_avg_price_purchased' => $stock->ps_avg_price_purchased,
-                    'service_fees' => $stock->total_service_fee,
-                    'currency' => $stock->currency
+                    'isin' => $stock->getIsin(),
+                    'exchange' => $stock->getExchange(),
+                    'volume_of_shares' => $stock->getVolumeOfShares(),
+                    'ps_avg_price_purchased' => $stock->getPsAvgPricePurchased(),
+                    'service_fees' => $stock->getServiceFees(),
+                    'currency' => $stock->getCurrency()
                 ]
             );
         }
