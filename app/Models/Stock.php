@@ -259,7 +259,7 @@ class Stock extends Model
      */
     public function getServiceFees()
     {
-        return $this->service_fees;
+        return abs($this->service_fees);
     }
 
     /**

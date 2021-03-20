@@ -63,11 +63,11 @@ class StockRepository
             $stock_list[$key]['stock_current_value'] = round($price * $volume, 2);
             $stock_list[$key]['ps_profit'] = round(($price - $gak) * $volume, 2);
             $stock_list[$key]['ps_profit_percentage'] = round(($stock_list[$key]['ps_profit'] / ($gak * $volume)) * 100, 2);
-            $stock_list[$key]['stock_invested'] = $volume * $gak;
+            $stock_list[$key]['stock_invested'] = ($volume * $gak) - $stock['service_fees'];
             $stock_list[$key]['stock_weight'] = round(($stock_list[$key]['stock_current_value'] / $total_portfolio_value) * 100);
-
-            $this->saveFinancialData($stock);
         }
+
+        $this->saveFinancialData($stock_list);
 
         return $stock_list;
     }
@@ -75,7 +75,9 @@ class StockRepository
     private function getStockProfiles()
     {
         $stocks = $this->symbolRepository->getStocksWithSymbols();
-        $tickers = array_map(function($stock) { return $stock->getStockTicker();}, $stocks);
+        $tickers = array_map(function ($stock) {
+            return $stock->getStockTicker();
+        }, $stocks);
         $formatted_tickers = implode(',', $tickers);
 
         $response = Http::withOptions([
@@ -100,16 +102,18 @@ class StockRepository
             );
     }
 
-    private function saveFinancialData($stock)
+    private function saveFinancialData($stock_list)
     {
-        Stock::where('isin', $stock['isin'])
-            ->where('user_id', Auth::id())
-            ->update([
-                'ps_profit' => $stock['ps_profit'],
-                'ps_profit_percentage' => $stock['ps_profit_percentage'],
-                'stock_current_value' => $stock['stock_current_value'],
-                'stock_weight' => $stock['stock_weight'],
-                'stock_invested' => $stock['stock_invested']
-            ]);
+        foreach ($stock_list as $stock) {
+            Stock::where('isin', $stock['isin'])
+                ->where('user_id', Auth::id())
+                ->update([
+                    'ps_profit' => $stock['ps_profit'],
+                    'ps_profit_percentage' => $stock['ps_profit_percentage'],
+                    'stock_current_value' => $stock['stock_current_value'],
+                    'stock_weight' => $stock['stock_weight'],
+                    'stock_invested' => $stock['stock_invested']
+                ]);
+        }
     }
 }

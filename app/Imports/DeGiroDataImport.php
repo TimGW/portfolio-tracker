@@ -34,7 +34,7 @@ class DeGiroDataImport implements ToModel, WithStartRow
                 'closing_rate' => str_replace(',', '.', $row[7]),
                 'local_value' => str_replace(',', '.', $row[9]),
                 'value' => str_replace(',', '.', $row[11]),
-                'service_fee' => $service_fee,
+                'service_fee' => abs($service_fee),
                 'total' => str_replace(',', '.', $row[16]),
                 'currency' => $row[8],
                 'user_id' => Auth::id()
