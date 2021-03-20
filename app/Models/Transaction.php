@@ -9,18 +9,11 @@ class Transaction extends Model
     protected $table = 'transactions';
 
     protected $fillable = [
-        'purchased_date',
-        'purchased_time',
-        'product',
         'isin',
         'exchange',
-        'place_of_execution',
         'quantity',
         'closing_rate',
-        'local_value',
-        'value',
         'service_fee',
-        'total',
         'currency',
         'user_id'
     ];

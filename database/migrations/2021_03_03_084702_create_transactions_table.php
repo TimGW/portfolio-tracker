@@ -14,18 +14,11 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('purchased_date', 255)->nullable();
-            $table->string('purchased_time', 255)->nullable();
-            $table->string('product', 255)->nullable();
             $table->string('isin', 255);
             $table->string('exchange', 255)->nullable();
-            $table->string('place_of_execution', 255)->nullable();
             $table->integer('quantity');
             $table->float('closing_rate')->nullable();
-            $table->float('local_value')->nullable();
-            $table->float('value')->nullable();
             $table->float('service_fee')->nullable();
-            $table->float('total')->nullable();
             $table->string('currency', 255);
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users');

@@ -10,14 +10,16 @@ use Illuminate\Support\Facades\Http;
 
 class StockRepository
 {
-    private $allTransactions;
     private $baseUrl = "https://financialmodelingprep.com/api/v3/";
+    private $allTransactions;
     private $symbolRepository;
+    private $currencyRepository;
 
     public function __construct($allTransactions)
     {
         $this->allTransactions = $allTransactions;
         $this->symbolRepository = new SymbolRepository($allTransactions);
+        $this->currencyRepository = new CurrencyRepository;
     }
 
     public function buildPortfolio(): Portfolio
@@ -30,6 +32,7 @@ class StockRepository
         }
 
         $data_set = Stock::where('user_id', Auth::id())->get()->toArray();
+        $data_set = $this->convertToEur($data_set);
         $total_portfolio_value = $this->calculateTotalPortfolioValue($data_set);
         $stock_list = $this->calculateStockIndicators($data_set, $total_portfolio_value);
         return $this->calculatePortfolioIndicators($stock_list, $total_portfolio_value);
@@ -115,5 +118,26 @@ class StockRepository
                     'stock_invested' => $stock['stock_invested']
                 ]);
         }
+    }
+
+    private function convertToEur($data_set): array
+    {
+        $decimals = 2;
+        foreach ($data_set as $key => $data) {
+            $data_set[$key]['ps_avg_price_purchased'] =
+                round($this->currencyRepository->convertCurrencyToEur($data['currency'], $data['ps_avg_price_purchased']), $decimals);
+            $data_set[$key]['ps_current_value'] =
+                round($this->currencyRepository->convertCurrencyToEur($data['currency'], $data['ps_current_value']), $decimals);
+            $data_set[$key]['ps_profit'] =
+                round($this->currencyRepository->convertCurrencyToEur($data['currency'], $data['ps_profit']), $decimals);
+            $data_set[$key]['ps_profit_percentage'] =
+                round($this->currencyRepository->convertCurrencyToEur($data['currency'], $data['ps_profit_percentage']), $decimals);
+            $data_set[$key]['stock_current_value'] =
+                round($this->currencyRepository->convertCurrencyToEur($data['currency'], $data['stock_current_value']), $decimals);
+            $data_set[$key]['stock_invested'] =
+                round($this->currencyRepository->convertCurrencyToEur($data['currency'], $data['stock_invested']), $decimals);
+        }
+
+        return $data_set;
     }
 }
