@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Http;
 
 class CurrencyRepository
 {
+    // conversion method with 1-day caching to preserve API limit
     function convertCurrencyToEur($currency, $amount)
     {
         $convertTo = "EUR";

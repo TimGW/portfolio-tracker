@@ -13,7 +13,6 @@ class Chart extends Model
 
     public $labels;
     public $dataset;
-    public $colours;
 
     public function __construct($stocks)
     {
@@ -21,38 +20,24 @@ class Chart extends Model
 
         $this->labels = $this->buildLabels();
         $this->dataset = $this->buildData();
-        $this->colours = $this->buildColors();
     }
 
     private function buildLabels(): array
     {
-        $labels = array_unique(array_column($this->stocks, 'stock_sector'));
+        $labels = $this->stocks->unique('stock_sector');
+
         $result = array();
         foreach ($labels as $value) {
-            $result[] = mb_strimwidth(strtolower($value), 0, 20, "...");
+            $result[] = mb_strimwidth(strtolower($value->stock_sector), 0, 30, "...");
         }
         return $result;
     }
 
     private function buildData(): array
     {
-        $labels = array_column($this->stocks, 'stock_sector');
-        $quantity = array_count_values($labels);
-        $onePercent = array_sum($quantity) / 100;
-
         $result = array();
-        foreach ($quantity as $value) {
-            $result[] = round($value / $onePercent, 2);
-        }
-
-        return $result;
-    }
-
-    private function buildColors(): array
-    {
-        $result = array();
-        for ($i = 0; $i < count($this->stocks); $i++) {
-            $result[] = '#' . substr(str_shuffle('ABCDEF0123456789'), 0, 6);
+        foreach ($this->stocks->groupBy('stock_sector') as $sector) {
+            $result[] = $sector->sum('stock_weight');
         }
         return $result;
     }

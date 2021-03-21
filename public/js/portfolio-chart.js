@@ -30,6 +30,15 @@ const handleChartJs = function () {
                     usePointStyle: true,
                     boxWidth: 6
                 }
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem, data) {
+                        let label = data.labels[tooltipItem.index];
+                        let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                        return ' ' + label + ': ' + value + '%';
+                    }
+                }
             }
         }
     });

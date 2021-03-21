@@ -82,7 +82,7 @@
             <div class="col-lg-6 mt-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">{{ __('Sectorverdeling') }}</h5>
+                        <h5 class="card-title">{{ __('Sectorverdeling op waarde') }}</h5>
                         <canvas id="doughnut-chart" data-render="chart-js" height="100"></canvas>
                     </div>
                 </div>

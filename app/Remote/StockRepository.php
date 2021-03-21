@@ -41,9 +41,8 @@ class StockRepository
 
     private function calculatePortfolioIndicators($stock_list, $total_portfolio_value): Portfolio
     {
-        $stock_list = $stock_list->toArray(); // todo don't use arrays
-        $total_invested = array_sum(array_column($stock_list, 'stock_invested'));
-        $total_profit = array_sum(array_column($stock_list, 'ps_profit'));
+        $total_invested = $stock_list->sum('stock_invested');
+        $total_profit = $stock_list->sum('ps_profit');
         $total_growth = round(($total_profit / $total_invested) * 100, 2);
 
         $portfolio = new Portfolio;
