@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
-class StockRepository
+class PortfolioRepository
 {
     private const BASEURL = "https://financialmodelingprep.com/api/v3/";
     private $allTransactions;

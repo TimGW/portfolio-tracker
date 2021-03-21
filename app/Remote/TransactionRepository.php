@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 class TransactionRepository
 {
 
-    public function allGroupedTransactionsForUser(): Collection
+    public function getGroupedTransactionsForUser(): Collection
     {
         return DB::table('transactions')
             ->where('user_id', '=', Auth::id())

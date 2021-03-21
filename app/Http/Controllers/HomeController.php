@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chart;
-use App\Remote\StockRepository;
+use App\Remote\PortfolioRepository;
 use App\Remote\TransactionRepository;
 
 class HomeController extends Controller
@@ -26,15 +26,15 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $transaction_repository = new TransactionRepository();
-        $transactions = $transaction_repository->allGroupedTransactionsForUser();
+        $transactionRepository = new TransactionRepository();
+        $transactions = $transactionRepository->getGroupedTransactionsForUser();
 
         if (empty($transactions)) {
             return view('empty');
         }
 
-        $stock_repository = new StockRepository($transactions);
-        $portfolio = $stock_repository->buildPortfolio();
+        $portfolioRepository = new PortfolioRepository($transactions);
+        $portfolio = $portfolioRepository->buildPortfolio();
 
         $chart = new Chart($portfolio->stocks);
 

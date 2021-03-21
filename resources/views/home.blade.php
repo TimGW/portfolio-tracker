@@ -8,60 +8,32 @@
     <div class="container">
         <div class="row row-cols-xl-4 row-cols-lg-4 row-cols-2">
             <div class="col mt-3">
-                @if($portfolio->total_current_value >= 0)
-                    <div class="card text-center text-white bg-success">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Balans') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_current_value ?: 0 }}</h3>
-                        </div>
+                <div class="card text-center bg-info text-white">
+                    <div class="card-body">
+                        <p class="card-text">{{ __('Balans') }}</p>
+                        <h3 class="card-title">€{{ $portfolio->total_current_value ?: 0 }}</h3>
                     </div>
-                @else
-                    <div class="card text-center text-white bg-danger">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Balans') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_current_value ?: 0 }}</h3>
-                        </div>
-                    </div>
-                @endif
+                </div>
             </div>
             <div class="col mt-3">
-                @if($portfolio->total_profit >= 0)
-                    <div class="card text-center text-white bg-success ">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Winst (ong.)') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
+                <div class="card text-center bg-info text-white">
+                    <div class="card-body">
+                        <p class="card-text">{{ __('Winst (ong.)') }}</p>
+                        <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
 
-                        </div>
                     </div>
-                @else
-                    <div class="card text-center text-white bg-danger ">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Verlies (ong.)') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
-
-                        </div>
-                    </div>
-                @endif
+                </div>
             </div>
             <div class="col mt-3">
-                @if($portfolio->total_growth >= 0)
-                    <div class="card text-center text-white bg-success ">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Groei') }}</p>
-                            <h3 class="card-title">{{ $portfolio->total_growth ?: 0 }}%</h3>
-                        </div>
+                <div class="card text-center bg-info text-white">
+                    <div class="card-body">
+                        <p class="card-text">{{ __('Groei') }}</p>
+                        <h3 class="card-title">{{ $portfolio->total_growth ?: 0 }}%</h3>
                     </div>
-                @else
-                    <div class="card text-center text-white bg-danger ">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Groei') }}</p>
-                            <h3 class="card-title">{{ $portfolio->total_growth ?: 0 }}%</h3>
-                        </div>
-                    </div>
-                @endif
+                </div>
             </div>
             <div class="col mt-3">
-                <div class="card text-center text-white bg-success ">
+                <div class="card text-center bg-info text-white">
                     <div class="card-body">
                         <p class="card-text">{{ __('Geïnvesteerd') }}</p>
                         <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
@@ -88,7 +60,7 @@
                     <div class="card-body table-responsive">
                         <h5 class="card-title">{{ __('Aandelen') }}</h5>
                         <table id="data-table-responsive" class="table table-hover">
-                            <thead class="thead-dark">
+                            <thead>
                             <tr>
                                 <th class="no-sort"></th>
                                 <th>Bedrijf</th>
