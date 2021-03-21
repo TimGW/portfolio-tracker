@@ -28,7 +28,8 @@ const handleChartJs = function () {
                 position: 'right',
                 labels: {
                     usePointStyle: true,
-                    boxWidth: 6
+                    boxWidth: 8,
+                    fontSize: 14
                 }
             },
             tooltips: {

@@ -70,18 +70,13 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-6 mt-3">
-                <div class="card text-center">
+            <div class="col-xl-12 mt-3">
+                <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{ __('Sectorverdeling op waarde') }}</h5>
-                        <canvas id="doughnut-chart" data-render="chart-js" height="100"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-6 mt-3">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ __('Grafiek') }}</h5>
+                        <div class="col-xl-8">
+                            <canvas id="doughnut-chart" data-render="chart-js" height="100"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
