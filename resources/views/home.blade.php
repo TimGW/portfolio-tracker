@@ -28,7 +28,7 @@
                 @if($portfolio->total_profit >= 0)
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
-                            <p class="card-text">{{ __('Winst / Verlies') }}</p>
+                            <p class="card-text">{{ __('Winst (ong.)') }}</p>
                             <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
 
                         </div>
@@ -36,7 +36,7 @@
                 @else
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
-                            <p class="card-text">{{ __('Winst / Verlies') }}</p>
+                            <p class="card-text">{{ __('Verlies (ong.)') }}</p>
                             <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
 
                         </div>
@@ -61,21 +61,12 @@
                 @endif
             </div>
             <div class="col mt-3">
-                @if($portfolio->total_invested >= 0)
-                    <div class="card text-center text-white bg-success ">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
-                        </div>
+                <div class="card text-center text-white bg-success ">
+                    <div class="card-body">
+                        <p class="card-text">{{ __('Geïnvesteerd') }}</p>
+                        <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
                     </div>
-                @else
-                    <div class="card text-center text-white bg-danger ">
-                        <div class="card-body">
-                            <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
-                        </div>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
         <div class="row">
@@ -119,7 +110,11 @@
                             <tbody>
                             @forelse ($portfolio->stocks as $stock)
                                 <tr>
-                                    <td class="text-center"><img height="20px" src="{{$stock['image']}}"></td>
+                                    <td>
+                                        <div class="card" style="width: 1.5rem;">
+                                            <img class="card-img mx-auto d-block" src="{{$stock['image']}}">
+                                        </div>
+                                    </td>
                                     <td>{{$stock['stock_name']}}</td>
                                     <td>{{$stock['volume_of_shares']}}</td>
                                     <td>€{{$stock['ps_avg_price_purchased']}}</td>
