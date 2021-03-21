@@ -37,7 +37,8 @@ const handleChartJs = function () {
                     label: function(tooltipItem, data) {
                         let label = data.labels[tooltipItem.index];
                         let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                        return ' ' + label + ': ' + value + '%';
+                        let roundedValue = Math.round(value * 100) / 100
+                        return ' ' + label + ': ' + roundedValue + '%';
                     }
                 }
             }

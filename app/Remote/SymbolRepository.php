@@ -67,7 +67,7 @@ class SymbolRepository
                 $stock->exchange = $first->exchange;
                 $stock->volume_of_shares = $volume_of_shares;
                 $stock->ps_avg_price_purchased = $ps_avg_price_purchased;
-                $stock->total_service_fee = $total_service_fee;
+                $stock->service_fees = $total_service_fee;
                 $stock->currency = $first->currency;
                 $stocks[] = $stock;
             }
