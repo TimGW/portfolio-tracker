@@ -18,7 +18,7 @@ class SymbolRepository
 
     public function getStocksWithSymbols(): array
     {
-        $request = $this->buildRequestBody($this->allTransactions);
+        $request = $this->buildRequestBody();
 
         $responseBody = Http::withOptions([
             'debug' => false
@@ -37,35 +37,40 @@ class SymbolRepository
         return $stocks;
     }
 
-    private function buildRequestBody($allTransactions): array
+    private function buildRequestBody(): array
     {
         $requestBody = array();
         $stocks = array();
 
-        foreach ($allTransactions as $transactionsForShare) {
-            $volume_of_shares = array_sum(array_column($transactionsForShare, 'quantity'));
-            if ($volume_of_shares == 0) continue;
+        foreach ($this->allTransactions as $isinTransactions) {
+            // $isinTransactions are grouped transactions by isin and exchange
 
-            $isin = $transactionsForShare[0]['isin'];
-            $exchCode = $this->getBBExchangeCode($transactionsForShare[0]['exchange']);
-            $ps_avg_price_purchased = round(array_sum(array_column($transactionsForShare, 'closing_rate')) / count($transactionsForShare), 2);
-            $total_service_fee = round(array_sum(array_column($transactionsForShare, 'service_fee')), 2);
-            $currency = $transactionsForShare[0]['currency'];
+            foreach ($isinTransactions as $exchangeTransactions) {
+                // $exchangeTransactions are all transactions for an exchange
 
-            if (!empty($exchCode)) {
-                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$isin", 'exchCode' => $exchCode);
-            } else {
-                $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$isin");
+                $first = $exchangeTransactions[0];
+                $volume_of_shares = $exchangeTransactions->sum('quantity');
+                if ($volume_of_shares === 0) continue;
+
+                $exchCode = $this->getBBExchangeCode($first->exchange);
+                $ps_avg_price_purchased = round($exchangeTransactions->sum('closing_rate') / count($exchangeTransactions), 2);
+                $total_service_fee = round($exchangeTransactions->sum('service_fee'), 2);
+
+                if (!empty($exchCode)) {
+                    $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$first->isin", 'exchCode' => $exchCode);
+                } else {
+                    $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$first->isin");
+                }
+
+                $stock = new Stock;
+                $stock->isin = $first->isin;
+                $stock->exchange = $first->exchange;
+                $stock->volume_of_shares = $volume_of_shares;
+                $stock->ps_avg_price_purchased = $ps_avg_price_purchased;
+                $stock->total_service_fee = $total_service_fee;
+                $stock->currency = $first->currency;
+                $stocks[] = $stock;
             }
-
-            $stock = new Stock;
-            $stock->setIsin($isin);
-            $stock->setExchange($transactionsForShare[0]['exchange']);
-            $stock->setVolumeOfShares($volume_of_shares);
-            $stock->setPsAvgPricePurchased($ps_avg_price_purchased);
-            $stock->setServiceFees($total_service_fee);
-            $stock->setCurrency($currency);
-            $stocks[] = $stock;
         }
 
         return array($stocks, $requestBody);
@@ -77,7 +82,7 @@ class SymbolRepository
 
         for ($i = 0; $i < count($responseDataSet); $i++) {
             $remoteTickerObjectData = $responseDataSet[$i][0];
-            $appendix = $this->getAppendix($stocks[$i]->getExchange());
+            $appendix = $this->getAppendix($stocks[$i]->exchange);
             $tickerSymbol = "";
 
             // skip adding ETF's to the ticker list
@@ -90,11 +95,11 @@ class SymbolRepository
             }
 
             // map the imported transactions to a symbol
-            $stocks[$i]->setStockTicker($tickerSymbol);
+            $stocks[$i]->stock_ticker = $tickerSymbol;
         }
 
         return (array_filter($stocks, function ($value) {
-            return !empty($value->getStockTicker());
+            return !empty($value->stock_ticker);
         }));
     }
 
@@ -103,16 +108,16 @@ class SymbolRepository
         foreach ($stocks as $stock) {
             Stock::updateOrCreate(
                 [
-                    'stock_ticker' => $stock->getStockTicker(),
-                    'user_id' => Auth::id()
+                    'stock_ticker' => $stock->stock_ticker,
+                    'portfolio_id' => Auth::id() //todo user portfolio id
                 ],
                 [
-                    'isin' => $stock->getIsin(),
-                    'exchange' => $stock->getExchange(),
-                    'volume_of_shares' => $stock->getVolumeOfShares(),
-                    'ps_avg_price_purchased' => $stock->getPsAvgPricePurchased(),
-                    'service_fees' => $stock->getServiceFees(),
-                    'currency' => $stock->getCurrency()
+                    'isin' => $stock->isin,
+                    'exchange' => $stock->exchange,
+                    'volume_of_shares' => $stock->volume_of_shares,
+                    'ps_avg_price_purchased' => $stock->ps_avg_price_purchased,
+                    'service_fees' => $stock->service_fees,
+                    'currency' => $stock->currency
                 ]
             );
         }

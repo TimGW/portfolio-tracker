@@ -2,47 +2,31 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
 
 class Portfolio extends Model
 {
-    private $stock_list;
-    private $total_current_value;
-    private $total_growth;
-    private $total_invested;
-    private $total_profit;
+    use HasFactory, Notifiable;
 
-    public function __construct($stock_list, $total_invested, $total_profit, $total_growth, $total_current_value)
+    protected $table = 'portfolio';
+
+    protected $fillable = [
+        'total_current_value',
+        'total_growth',
+        'total_invested',
+        'total_profit',
+        'user_id'
+    ];
+
+    public function stocks()
     {
-        $this->stock_list = $stock_list;
-        $this->total_current_value = $total_current_value;
-        $this->total_growth = $total_growth;
-        $this->total_invested = $total_invested;
-        $this->total_profit = $total_profit;
+        return $this->hasMany(Stock::class);
     }
 
-    public function getTotalCurrentValue()
+    public function user()
     {
-        return $this->total_current_value;
-    }
-
-    public function getTotalGrowth()
-    {
-        return $this->total_growth;
-    }
-
-    public function getTotalProfit()
-    {
-        return $this->total_profit;
-    }
-
-    public function getStockList()
-    {
-        return $this->stock_list;
-    }
-
-    public function getTotalInvested()
-    {
-        return $this->total_invested;
+        return $this->belongsTo(User::class);
     }
 }

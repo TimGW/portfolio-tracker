@@ -43,8 +43,8 @@ class User extends Authenticatable
         return $this->hasMany(Transaction::class);
     }
 
-    public function stocks()
+    public function portfolio()
     {
-        return $this->hasMany(Stock::class);
+        return $this->hasOne(Portfolio::class);
     }
 }

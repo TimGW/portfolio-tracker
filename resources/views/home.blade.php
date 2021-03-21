@@ -12,14 +12,14 @@
                     <div class="card text-center text-white bg-success">
                         <div class="card-body">
                             <p class="card-text">{{ __('Balans') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->getTotalCurrentValue() ?: 0 }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->total_current_value ?: 0 }}</h3>
                         </div>
                     </div>
                 @else
                     <div class="card text-center text-white bg-danger">
                         <div class="card-body">
                             <p class="card-text">{{ __('Balans') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->getTotalCurrentValue() ?: 0 }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->total_current_value ?: 0 }}</h3>
                         </div>
                     </div>
                 @endif
@@ -29,7 +29,7 @@
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Winst / Verlies') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->getTotalProfit() ?: 0 }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
 
                         </div>
                     </div>
@@ -37,7 +37,7 @@
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Winst / Verlies') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->getTotalProfit() ?: 0 }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
 
                         </div>
                     </div>
@@ -48,14 +48,14 @@
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Groei') }}</p>
-                            <h3 class="card-title">{{ $portfolio->getTotalGrowth() ?: 0 }}%</h3>
+                            <h3 class="card-title">{{ $portfolio->total_growth ?: 0 }}%</h3>
                         </div>
                     </div>
                 @else
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Groei') }}</p>
-                            <h3 class="card-title">{{ $portfolio->getTotalGrowth() ?: 0 }}%</h3>
+                            <h3 class="card-title">{{ $portfolio->total_growth ?: 0 }}%</h3>
                         </div>
                     </div>
                 @endif
@@ -65,14 +65,14 @@
                     <div class="card text-center text-white bg-success ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->getTotalInvested() ?: 0 }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
                         </div>
                     </div>
                 @else
                     <div class="card text-center text-white bg-danger ">
                         <div class="card-body">
                             <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                            <h3 class="card-title">€{{ $portfolio->getTotalInvested() ?: 0 }}</h3>
+                            <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
                         </div>
                     </div>
                 @endif
@@ -117,7 +117,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            @forelse ($portfolio->getStockList() as $stock)
+                            @forelse ($portfolio->stocks as $stock)
                                 <tr>
                                     <td class="text-center"><img height="20px" src="{{$stock['image']}}"></td>
                                     <td>{{$stock['stock_name']}}</td>

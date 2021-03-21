@@ -5,6 +5,7 @@ namespace App\Remote;
 
 use App\Models\Portfolio;
 use App\Models\Stock;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -31,7 +32,7 @@ class StockRepository
             $this->saveProfileData($profile);
         }
 
-        $data_set = Stock::where('user_id', Auth::id())->get()->toArray();
+        $data_set = Portfolio::where('user_id', Auth::id())->first()->stocks()->get();
         $data_set = $this->convertToEur($data_set);
         $total_portfolio_value = $this->calculateTotalPortfolioValue($data_set);
         $stock_list = $this->calculateStockIndicators($data_set, $total_portfolio_value);
@@ -40,11 +41,19 @@ class StockRepository
 
     private function calculatePortfolioIndicators($stock_list, $total_portfolio_value): Portfolio
     {
+        $stock_list = $stock_list->toArray(); // todo don't use arrays
         $total_invested = array_sum(array_column($stock_list, 'stock_invested'));
         $total_profit = array_sum(array_column($stock_list, 'ps_profit'));
         $total_growth = round(($total_profit / $total_invested) * 100, 2);
 
-        return new Portfolio($stock_list, $total_invested, $total_profit, $total_growth, $total_portfolio_value);
+        $portfolio = new Portfolio;
+        $portfolio->stocks = $stock_list;
+        $portfolio->total_invested = $total_invested;
+        $portfolio->total_profit = $total_profit;
+        $portfolio->total_growth = $total_growth;
+        $portfolio->total_current_value = $total_portfolio_value;
+
+        return $portfolio;
     }
 
     private function calculateTotalPortfolioValue($stock_list)
@@ -56,7 +65,7 @@ class StockRepository
         return $total_portfolio_value;
     }
 
-    private function calculateStockIndicators($stock_list, $total_portfolio_value): array
+    private function calculateStockIndicators($stock_list, $total_portfolio_value): Collection
     {
         foreach ($stock_list as $key => $stock) {
             $volume = $stock['volume_of_shares'];
@@ -79,7 +88,7 @@ class StockRepository
     {
         $stocks = $this->symbolRepository->getStocksWithSymbols();
         $tickers = array_map(function ($stock) {
-            return $stock->getStockTicker();
+            return $stock->stock_ticker;
         }, $stocks);
         $formatted_tickers = implode(',', $tickers);
 
@@ -95,7 +104,7 @@ class StockRepository
     private function saveProfileData($stock_profile)
     {
         Stock::where('isin', $stock_profile['isin'])
-            ->where('user_id', Auth::id())
+            ->where('portfolio_id', Auth::id())
             ->update([
                     'stock_name' => $stock_profile['companyName'],
                     'stock_sector' => $stock_profile['sector'],
@@ -109,7 +118,7 @@ class StockRepository
     {
         foreach ($stock_list as $stock) {
             Stock::where('isin', $stock['isin'])
-                ->where('user_id', Auth::id())
+                ->where('portfolio_id', Auth::id())
                 ->update([
                     'ps_profit' => $stock['ps_profit'],
                     'ps_profit_percentage' => $stock['ps_profit_percentage'],
@@ -120,7 +129,7 @@ class StockRepository
         }
     }
 
-    private function convertToEur($data_set): array
+    private function convertToEur($data_set): Collection
     {
         $decimals = 2;
         foreach ($data_set as $key => $data) {

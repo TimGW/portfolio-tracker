@@ -32,7 +32,7 @@ class CreateStocksTable extends Migration
             $table->string('currency', 5)->nullable()->default('');
             $table->string('image', 255)->nullable()->default('');
             $table->timestamps();
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('portfolio_id')->constrained('portfolio');
         });
     }
 
