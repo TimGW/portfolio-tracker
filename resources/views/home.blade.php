@@ -46,8 +46,8 @@
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title">{{ __('Sectorverdeling op waarde') }}</h5>
-                        <div class="col-xl-8">
-                            <canvas id="doughnut-chart" data-render="chart-js" height="100"></canvas>
+                        <div class="col-xl-11">
+                            <canvas id="doughnut-chart" data-render="chart-js" height="80"></canvas>
                         </div>
                     </div>
                 </div>
