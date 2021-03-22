@@ -29,12 +29,12 @@ class HomeController extends Controller
         $transactionRepository = new TransactionRepository();
         $transactions = $transactionRepository->getGroupedTransactionsForUser();
 
-        if (empty($transactions)) {
+        if (empty($transactions->all())) {
             return view('empty');
         }
 
         $portfolioRepository = new PortfolioRepository($transactions);
-        $portfolio = $portfolioRepository->buildPortfolio();
+        $portfolio = $portfolioRepository->getPortfolio();
 
         $chart = new Chart($portfolio->stocks);
 

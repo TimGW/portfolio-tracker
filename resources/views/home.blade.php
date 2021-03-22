@@ -59,7 +59,7 @@
                 <div class="card">
                     <div class="card-body table-responsive">
                         <h5 class="card-title">{{ __('Aandelen') }}</h5>
-                        <table id="data-table-responsive" class="table table-hover">
+                        <table id="data-table-responsive" class="table table-hover responsive nowrap w-100">
                             <thead>
                             <tr>
                                 <th class="no-sort"></th>
@@ -71,7 +71,6 @@
                                 <th>Groei</th>
                                 <th>Waarde</th>
                                 <th>Gewicht</th>
-                                <th class="no-sort"></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -91,7 +90,7 @@
                                     <td>€{{$stock['stock_current_value']}}</td>
                                     <td data-order="{{$stock['stock_weight']}}">
                                         <progress value="{{$stock['stock_weight']}}" max="100"></progress>
-                                    <td>{{$stock['stock_weight']}}%</td>
+                                        &nbsp;{{$stock['stock_weight']}}%
                                     </td>
                                 </tr>
                             @empty

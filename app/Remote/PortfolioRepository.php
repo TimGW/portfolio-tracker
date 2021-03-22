@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Http;
 
 class PortfolioRepository
 {
-    private const BASEURL = "https://financialmodelingprep.com/api/v3/";
+    const BASE_URL = "https://financialmodelingprep.com/api/v3/";
+    const CACHE_TIME = Carbon::HOURS_PER_DAY * Carbon::MINUTES_PER_HOUR * Carbon::SECONDS_PER_MINUTE;
     private $allTransactions;
     private $symbolRepository;
     private $currencyRepository;
@@ -24,31 +25,30 @@ class PortfolioRepository
         $this->currencyRepository = new CurrencyRepository;
     }
 
-    public function buildPortfolio(): Portfolio
+    public function getPortfolio(): Portfolio
     {
-        $stock_data_set = $this->fetchProfileData();
+        $portfolio = Portfolio::where('user_id', Auth::id())->first();
 
-        $total_portfolio_value = $stock_data_set->sum(function ($stock) {
-            return round($stock->ps_current_value * $stock->volume_of_shares, 2);
-        });
-        $stock_list = $this->calculateStockIndicators($stock_data_set, $total_portfolio_value);
-        return $this->calculatePortfolioIndicators($stock_list, $total_portfolio_value);
-    }
-
-    private function fetchProfileData(): Collection
-    {
-        $result = Portfolio::where('user_id', Auth::id())->firstOr(function () {
-            return $this->getRemoteProfiles();
-        });
-
-        $secondsInDay = Carbon::HOURS_PER_DAY * Carbon::MINUTES_PER_HOUR * Carbon::SECONDS_PER_MINUTE;
-        if ($result->updated_at->diffInSeconds(Carbon::now()) > $secondsInDay) {
+        // check if cache is old or has not yet been fetched for first time
+        if ($portfolio->updated_at->diffInSeconds(Carbon::now()) > $this::CACHE_TIME ||
+            $portfolio->created_at->eq($portfolio->updated_at)
+        ) {
             $profiles = $this->getRemoteProfiles();
-        } else {
-            $profiles = $result;
+            $this->updateStockProfiles($profiles);
         }
 
-        return $this->convertToEur($profiles->stocks);
+        $stocks = $this->convertToEur($portfolio->stocks);
+        $total_portfolio_value = $stocks->sum(function ($stock) {
+            return round($stock->ps_current_value * $stock->volume_of_shares, 2);
+        });
+
+        $stock_list = $this->calculateStockIndicators($stocks, $total_portfolio_value);
+        $this->updateStockIndicators($stock_list);
+
+        $portfolio = $this->calculatePortfolioIndicators($stock_list, $total_portfolio_value);
+        $this->updatePortfolio($portfolio);
+
+        return $portfolio;
     }
 
     private function calculatePortfolioIndicators($stock_list, $total_portfolio_value): Portfolio
@@ -78,8 +78,6 @@ class PortfolioRepository
             $stock_list[$key]->ps_profit_percentage = round(($stock_list[$key]->ps_profit / ($gak * $volume)) * 100, 2);
             $stock_list[$key]->stock_invested = ($volume * $gak) - $stock->service_fees;
             $stock_list[$key]->stock_weight = round(($stock_list[$key]->stock_current_value / $total_portfolio_value) * 100, 2);
-
-            $this->saveFinancialData($stock);
         }
 
         return $stock_list;
@@ -95,43 +93,54 @@ class PortfolioRepository
 
         $response = Http::withOptions([
             'debug' => false
-        ])->get($this::BASEURL . "profile/$formatted_tickers", [
+        ])->get($this::BASE_URL . "profile/$formatted_tickers", [
             'apikey' => env('AV_KEY')
         ]);
 
-        $result = json_decode($response->getBody(), true); // todo don't use array
+        return json_decode($response->getBody());
+    }
 
-        foreach ($result as $profile) {
-            $this->saveProfileData($profile);
+    private function updatePortfolio($portfolio)
+    {
+        Portfolio::firstWhere('user_id', Auth::id())->update([
+                'total_invested' => $portfolio->total_invested,
+                'total_profit' => $portfolio->total_profit,
+                'total_growth' => $portfolio->total_growth,
+                'total_current_value' => $portfolio->total_current_value,
+            ]
+        );
+    }
+
+    private function updateStockProfiles($profiles)
+    {
+        foreach ($profiles as $stock_profile) {
+            Portfolio::firstWhere('user_id', Auth::id())
+                ->stocks()
+                ->where('stock_ticker', $stock_profile->symbol)
+                ->update([
+                        'stock_name' => $stock_profile->companyName,
+                        'stock_sector' => $stock_profile->sector,
+                        'ps_current_value' => $stock_profile->price,
+                        'image' => $stock_profile->image
+                    ]
+                );
         }
-
-        return $result;
     }
 
-    private function saveProfileData($stock_profile)
+    private function updateStockIndicators($stock_list)
     {
-        Stock::where('isin', $stock_profile['isin'])
-            ->where('portfolio_id', Auth::id())
-            ->update([
-                    'stock_name' => $stock_profile['companyName'],
-                    'stock_sector' => $stock_profile['sector'],
-                    'ps_current_value' => $stock_profile['price'],
-                    'image' => $stock_profile['image']
-                ]
-            );
-    }
-
-    private function saveFinancialData($stock)
-    {
-        Stock::where('isin', $stock->isin)
-            ->where('portfolio_id', Auth::id())
-            ->update([
-                'ps_profit' => $stock->ps_profit,
-                'ps_profit_percentage' => $stock->ps_profit_percentage,
-                'stock_current_value' => $stock->stock_current_value,
-                'stock_weight' => $stock->stock_weight,
-                'stock_invested' => $stock->stock_invested
-            ]);
+        foreach ($stock_list as $stock) {
+            Portfolio::firstWhere('user_id', Auth::id())
+                ->stocks()
+                ->where('stock_ticker', $stock->stock_ticker)
+                ->update([
+                    'ps_profit' => $stock->ps_profit,
+                    'ps_profit_percentage' => $stock->ps_profit_percentage,
+                    'stock_current_value' => $stock->stock_current_value,
+                    'stock_weight' => $stock->stock_weight,
+                    'stock_invested' => $stock->stock_invested
+                ]);
+        }
     }
 
     private function convertToEur($data_set): Collection

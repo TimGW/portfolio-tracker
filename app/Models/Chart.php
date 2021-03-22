@@ -17,7 +17,6 @@ class Chart extends Model
     public function __construct($stocks)
     {
         $this->stocks = $stocks;
-
         $this->labels = $this->buildLabels();
         $this->dataset = $this->buildData();
     }
