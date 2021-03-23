@@ -48,7 +48,7 @@ class PortfolioRepository
         $portfolio = $this->calculatePortfolioIndicators($stock_list, $total_portfolio_value);
         $this->updatePortfolio($portfolio);
 
-        return $portfolio;
+        return Portfolio::where('user_id', Auth::id())->first();
     }
 
     private function calculatePortfolioIndicators($stock_list, $total_portfolio_value): Portfolio

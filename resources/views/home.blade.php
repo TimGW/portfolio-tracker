@@ -6,6 +6,14 @@
 
 @section('content')
     <div class="container">
+        <div class="row justify-content-end mx-md-n5">
+            <h6><div class="bg-secondary text-light rounded-bottom p-2">
+                    Laatst gewijzigd: {{ \Carbon\Carbon::parse($portfolio->updated_at)->diffForhumans() }}
+                </div></h6>
+        </div>
+    </div>
+
+    <div class="container">
         <div class="row row-cols-xl-4 row-cols-lg-4 row-cols-2">
             <div class="col mt-3">
                 <div class="card text-center bg-info text-white">
