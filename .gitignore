@@ -16,3 +16,4 @@ public/.DS_Store
 storage/framework/laravel-excel/*
 /.vscode/
 /.idea
+/.env.debug
