@@ -4,8 +4,7 @@
 /storage/*.key
 /vendor
 .env
-.env.prod
-.env.backup
+.env.*
 .phpunit.result.cache
 docker-compose.override.yml
 Homestead.json
@@ -16,4 +15,3 @@ public/.DS_Store
 storage/framework/laravel-excel/*
 /.vscode/
 /.idea
-/.env.debug
