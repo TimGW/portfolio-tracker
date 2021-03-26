@@ -24,6 +24,8 @@ const handleChartJs = function () {
         type: 'doughnut',
         data: doughnutChartData,
         options: {
+            responsive: true,
+            maintainAspectRatio: false,
             legend: {
                 position: 'right',
                 labels: {
@@ -34,7 +36,7 @@ const handleChartJs = function () {
             },
             tooltips: {
                 callbacks: {
-                    label: function(tooltipItem, data) {
+                    label: function (tooltipItem, data) {
                         let label = data.labels[tooltipItem.index];
                         let value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
                         let roundedValue = Math.round(value * 100) / 100

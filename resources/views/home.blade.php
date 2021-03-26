@@ -6,10 +6,12 @@
 
 @section('content')
     <div class="container">
-        <div class="row justify-content-end mx-md-n5">
-            <h6><div class="bg-secondary text-light rounded-bottom p-2">
-                    Laatst gewijzigd: {{ \Carbon\Carbon::parse($portfolio->updated_at)->diffForhumans() }}
-                </div></h6>
+        <div class="row justify-content-end mx-auto">
+            <h6>
+                <div class="bg-secondary text-light rounded-bottom p-2">
+                    Laatst geüpdatet: {{ \Carbon\Carbon::parse($portfolio->updated_at)->diffForhumans() }}
+                </div>
+            </h6>
         </div>
     </div>
 
@@ -55,7 +57,9 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ __('Sectorverdeling op waarde') }}</h5>
                         <div class="col-xl-11">
-                            <canvas id="doughnut-chart" data-render="chart-js" height="80"></canvas>
+                            <div class="chart-container" style="height:30vh;">
+                                <canvas id="doughnut-chart" data-render="chart-js"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
