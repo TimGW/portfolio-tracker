@@ -33,17 +33,15 @@ class HomeController extends Controller
         $transactionRepository = new TransactionRepository();
         $transactions = $transactionRepository->getGroupedTransactionsForUser();
 
-        if (empty($transactions->all())) {
-            return view('empty');
-        }
+        if (empty($transactions->all())) return view('empty');
 
-        $portfolio = $this->buildPortfolioForTransactions($transactions);
+        $portfolio = $this->buildPortfolio($transactions);
         $chart = new Chart($portfolio->stocks);
 
         return view('home', compact('portfolio', 'chart'));
     }
 
-    private function buildPortfolioForTransactions($transactions): Portfolio
+    private function buildPortfolio($transactions): Portfolio
     {
         $symbolRepository = new SymbolRepository($transactions);
         $stocks = $symbolRepository->getStocksWithSymbols();
