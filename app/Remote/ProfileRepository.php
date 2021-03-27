@@ -17,6 +17,12 @@ class ProfileRepository
 {
     const CACHE_TIME = Carbon::HOURS_PER_DAY * Carbon::MINUTES_PER_HOUR * Carbon::SECONDS_PER_MINUTE;
     const BASE_URL = "https://financialmodelingprep.com/api/v3/";
+    private $curRep;
+
+    public function __construct()
+    {
+        $this->curRep = new CurrencyRepository;
+    }
 
     function fetchProfiles($symbols)
     {
@@ -36,6 +42,7 @@ class ProfileRepository
         $profiles = $this->getRemoteProfiles($symbolsToBeFetched);
         foreach($profiles as $profile) {
             $matcher = ['symbol' => $profile['symbol']];
+            $profile['price'] = $this->curRep->convertToEur($profile['currency'], $profile['price']);
             Profile::updateOrCreate($matcher, $profile);
         }
 

@@ -25,7 +25,7 @@ class CurrencyRepository
         return $conversionPrice * $amount;
     }
 
-    function fetchCurrency($symbol)
+    private function fetchCurrency($symbol)
     {
         if (empty($symbol)) return null;
 
