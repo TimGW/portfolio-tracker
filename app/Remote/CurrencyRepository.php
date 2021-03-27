@@ -4,64 +4,66 @@
 namespace App\Remote;
 
 use App\Models\Currency;
+use App\Models\Profile;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 
 class CurrencyRepository
 {
-    // conversion method with 1-day caching to preserve API limit
-    function convertCurrencyToEur($currency, $amount)
+    const CACHE_TIME = Carbon::HOURS_PER_DAY * Carbon::MINUTES_PER_HOUR * Carbon::SECONDS_PER_MINUTE;
+    const EUR = "EUR";
+
+    function convertToEur($currency, $amount)
     {
-        $convertTo = "EUR";
-        if (strcasecmp($currency, $convertTo)) {
-            $convertTo = $currency . $convertTo;
+        if (strcasecmp($currency, $this::EUR)) {
+            $symbol = $currency . $this::EUR;
         } else {
             return $amount;
         }
 
-        $now = Carbon::now();
-        $secondsInDay = 86400; // 3600 * 24
-
-        $result = Currency::where('symbol', '=', $convertTo)->firstOr(function () use ($convertTo) {
-            return $this->getRemoteCurrency($convertTo);
-        });
-
-        // return cached result if not older than 1 day
-        if ($result->updated_at->diffInSeconds($now) > $secondsInDay) {
-            $conversionPrice = $this->getRemoteCurrency($convertTo)->price;
-        } else {
-            $conversionPrice = $result->price;
-        }
-
+        $conversionPrice = $this->fetchCurrency(explode(",", $symbol))->first()->price;
         return $conversionPrice * $amount;
     }
 
-    private function getRemoteCurrency($convertTo): Currency
+    function fetchCurrency($symbols)
     {
-        $response = json_decode(Http::withOptions([
-            'debug' => false
-        ])->get("https://financialmodelingprep.com/api/v3/quote/" . $convertTo, [
-            'apikey' => env('AV_KEY')
-        ])->getBody(), true);
+        if (empty($symbols)) return null;
 
-        Currency::where('symbol', $response[0]['symbol'])->update(['price' => $response[0]['price']]);
+        $currencyQuery = Currency::wherein('symbol', $symbols);
+        $validSymbols = $currencyQuery->pluck('symbol')->toArray();
+        $nonExistingProfiles = array_values(array_diff($symbols, $validSymbols));
 
-        return $this->updateOrCreate($response[0]);
-    }
+        $staleData = $currencyQuery->get()->filter(function ($profile) {
+            return $this->isCacheStale($profile);
+        })->pluck('symbol')->toArray();
 
-    private function updateOrCreate($response)
-    {
-        $currency = Currency::where('symbol', $response['symbol'])->first();
+        $symbolsToBeFetched = array_unique(array_merge($staleData, $nonExistingProfiles));
 
-        if ($currency !== null) {
-            $currency->update(['price' => $response['price']]);
-        } else {
-            $currency = Currency::create([
-                'symbol' => $response['symbol'],
-                'price' => $response['price'],
-            ]);
+        // fetch and store
+        $currencies = $this->getRemoteCurrencies($symbolsToBeFetched);
+        foreach($currencies as $profile) {
+            $matcher = ['symbol' => $profile['symbol']];
+            Currency::updateOrCreate($matcher, $profile);
         }
 
-        return $currency;
+        return $currencyQuery->get()->fresh();
+    }
+
+    private function isCacheStale($data): bool
+    {
+        return $data->updated_at->diffInSeconds(Carbon::now()) > $this::CACHE_TIME ||
+            $data->created_at->eq($data->updated_at);
+    }
+
+    private function getRemoteCurrencies($symbols): array
+    {
+        if (empty($symbols)) return array();
+
+        $fSymbols = implode(',', $symbols);
+        return json_decode(Http::withOptions([
+            'debug' => false
+        ])->get("https://financialmodelingprep.com/api/v3/quote/" . $fSymbols, [
+            'apikey' => env('AV_KEY')
+        ])->getBody(), true);
     }
 }

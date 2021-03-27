@@ -19,8 +19,9 @@ class CreatePortfolioTable extends Migration
             $table->float('total_growth')->default(0);
             $table->float('total_invested')->default(0);
             $table->float('total_profit')->default(0);
-            $table->timestamps();
+            $table->string('currency', 5)->nullable()->default('');
             $table->foreignId('user_id')->constrained('users');
+            $table->timestamps();
         });
     }
 

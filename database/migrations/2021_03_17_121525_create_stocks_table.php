@@ -15,7 +15,7 @@ class CreateStocksTable extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('stock_ticker', 10)->nullable();
+            $table->string('symbol', 10)->nullable();
             $table->string('isin', 255)->nullable();
             $table->string('exchange', 255)->nullable()->default('');
             $table->string('stock_name', 255)->nullable()->default('');
@@ -31,8 +31,8 @@ class CreateStocksTable extends Migration
             $table->float('service_fees')->nullable()->default(0);
             $table->string('currency', 5)->nullable()->default('');
             $table->string('image', 255)->nullable()->default('');
-            $table->timestamps();
             $table->foreignId('portfolio_id')->constrained('portfolio');
+            $table->timestamps();
         });
     }
 

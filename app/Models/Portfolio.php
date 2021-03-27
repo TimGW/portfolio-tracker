@@ -17,8 +17,9 @@ class Portfolio extends Model
         'total_growth',
         'total_invested',
         'total_profit',
-        'updated_at',
-        'user_id'
+        'user_id',
+        'currency',
+        'updated_at'
     ];
 
     public function stocks()

@@ -20,8 +20,8 @@ class CreateTransactionsTable extends Migration
             $table->float('closing_rate')->nullable();
             $table->float('service_fee')->nullable();
             $table->string('currency', 255);
-            $table->timestamps();
             $table->foreignId('user_id')->constrained('users');
+            $table->timestamps();
         });
     }
 

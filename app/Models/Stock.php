@@ -13,7 +13,7 @@ class Stock extends Model
     protected $table = 'stocks';
 
     protected $fillable = [
-        'stock_ticker',
+        'symbol',
         'isin',
         'exchange',
         'stock_name',

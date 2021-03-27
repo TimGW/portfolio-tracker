@@ -4,7 +4,6 @@
 namespace App\Remote;
 
 use App\Models\Stock;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
 class SymbolRepository
@@ -18,7 +17,7 @@ class SymbolRepository
 
     public function getStocksWithSymbols(): array
     {
-        $request = $this->buildRequestBody();
+        $request = $this->buildRequest();
 
         $responseBody = Http::withOptions([
             'debug' => false
@@ -30,14 +29,10 @@ class SymbolRepository
             'text/json'
         )->post("https://api.openfigi.com/v1/mapping")->getBody();
 
-        $stocks = $this->mapRemoteResponse($request[0], $responseBody);
-
-        $this->saveTransactionData($stocks);
-
-        return $stocks;
+        return $this->mapRemoteResponse($request[0], $responseBody);
     }
 
-    private function buildRequestBody(): array
+    private function buildRequest(): array
     {
         $requestBody = array();
         $stocks = array();
@@ -95,32 +90,12 @@ class SymbolRepository
             }
 
             // map the imported transactions to a symbol
-            $stocks[$i]->stock_ticker = $tickerSymbol;
+            $stocks[$i]->symbol = $tickerSymbol;
         }
 
         return (array_filter($stocks, function ($value) {
-            return !empty($value->stock_ticker);
+            return !empty($value->symbol);
         }));
-    }
-
-    private function saveTransactionData($stocks)
-    {
-        foreach ($stocks as $stock) {
-            Stock::updateOrCreate(
-                [
-                    'stock_ticker' => $stock->stock_ticker,
-                    'portfolio_id' => Auth::id() //todo user portfolio id
-                ],
-                [
-                    'isin' => $stock->isin,
-                    'exchange' => $stock->exchange,
-                    'volume_of_shares' => $stock->volume_of_shares,
-                    'ps_avg_price_purchased' => $stock->ps_avg_price_purchased,
-                    'service_fees' => $stock->service_fees,
-                    'currency' => $stock->currency
-                ]
-            );
-        }
     }
 
     private function getBBExchangeCode($giro_exchange): string
