@@ -21,32 +21,29 @@ class CurrencyRepository
             return $amount;
         }
 
-        $conversionPrice = $this->fetchCurrency(explode(",", $symbol))->first()->price;
+        $conversionPrice = $this->fetchCurrency($symbol)->first()->price;
         return $conversionPrice * $amount;
     }
 
-    function fetchCurrency($symbols)
+    function fetchCurrency($symbol)
     {
-        if (empty($symbols)) return null;
+        if (empty($symbol)) return null;
 
-        $currencyQuery = Currency::wherein('symbol', $symbols);
-        $validSymbols = $currencyQuery->pluck('symbol')->toArray();
-        $nonExistingProfiles = array_values(array_diff($symbols, $validSymbols));
+        $currencyQuery = Currency::where('symbol', $symbol);
+        $result = $currencyQuery->firstOr(function () use ($symbol) {
+            return $this->getRemoteAndCache($symbol);
+        });
 
-        $staleData = $currencyQuery->get()->filter(function ($profile) {
-            return $this->isCacheStale($profile);
-        })->pluck('symbol')->toArray();
-
-        $symbolsToBeFetched = array_unique(array_merge($staleData, $nonExistingProfiles));
-
-        // fetch and store
-        $currencies = $this->getRemoteCurrencies($symbolsToBeFetched);
-        foreach($currencies as $profile) {
-            $matcher = ['symbol' => $profile['symbol']];
-            Currency::updateOrCreate($matcher, $profile);
-        }
+        if ($this->isCacheStale($result)) $this->getRemoteAndCache($symbol);
 
         return $currencyQuery->get()->fresh();
+    }
+
+    private function getRemoteAndCache($symbol)
+    {
+        $response = $this->getRemoteCurrency($symbol);
+        $matcher = ['symbol' => $response['symbol']];
+        return Currency::updateOrCreate($matcher, $response);
     }
 
     private function isCacheStale($data): bool
@@ -55,15 +52,14 @@ class CurrencyRepository
             $data->created_at->eq($data->updated_at);
     }
 
-    private function getRemoteCurrencies($symbols): array
+    private function getRemoteCurrency($symbol): array
     {
-        if (empty($symbols)) return array();
+        if (empty($symbol)) return array();
 
-        $fSymbols = implode(',', $symbols);
         return json_decode(Http::withOptions([
             'debug' => false
-        ])->get("https://financialmodelingprep.com/api/v3/quote/" . $fSymbols, [
+        ])->get("https://financialmodelingprep.com/api/v3/quote/" . $symbol, [
             'apikey' => env('AV_KEY')
-        ])->getBody(), true);
+        ])->getBody(), true)[0];
     }
 }
