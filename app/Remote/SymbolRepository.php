@@ -3,19 +3,20 @@
 
 namespace App\Remote;
 
-use App\Models\Stock;
 use Illuminate\Support\Facades\Http;
 
 class SymbolRepository
 {
+    private $transactionRepo;
     private $allTransactions;
 
-    public function __construct($allTransactions)
+    public function __construct($transactionRepo)
     {
-        $this->allTransactions = $allTransactions;
+        $this->transactionRepo = $transactionRepo;
+        $this->allTransactions = $transactionRepo->getTransactionByIsinAndExch();
     }
 
-    public function getStocksWithSymbols(): array
+    public function buildSymbols(): array
     {
         $request = $this->buildRequest();
 
@@ -25,104 +26,81 @@ class SymbolRepository
             'Content-Type' => 'text/json',
             'X-OPENFIGI-APIKEY' => env('OPEN_FIGI_KEY'),
         ])->withBody(
-            json_encode($request[1]),
+            json_encode(array_column($request, 'requestBody')),
             'text/json'
         )->post("https://api.openfigi.com/v1/mapping")->getBody();
 
-        return $this->mapRemoteResponse($request[0], $responseBody);
+        return $this->mapRemoteResponse($request, $responseBody);
     }
 
     private function buildRequest(): array
     {
-        $requestBody = array();
-        $stocks = array();
-
+        $symbols = array();
         foreach ($this->allTransactions as $isinTransactions) {
             // $isinTransactions are grouped transactions by isin and exchange
 
-            foreach ($isinTransactions as $exchangeTransactions) {
+            foreach ($isinTransactions as $key => $exchTransactions) {
                 // $exchangeTransactions are all transactions for an exchange
 
-                $first = $exchangeTransactions[0];
-                $volume_of_shares = $exchangeTransactions->sum('quantity');
-                if ($volume_of_shares === 0) continue;
+                if ($exchTransactions->sum('quantity') === 0) continue; // skip fully sold stocks
 
-                $exchCode = $this->getBBExchangeCode($first->exchange);
-                $ps_avg_price_purchased = round($exchangeTransactions->sum('closing_rate') / count($exchangeTransactions), 2);
-                $total_service_fee = round($exchangeTransactions->sum('service_fee'), 2);
-
-                if (!empty($exchCode)) {
-                    $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$first->isin", 'exchCode' => $exchCode);
+                $first = $exchTransactions[0];
+                if (!empty($first->exchange)) {
+                    $requestBody = array('idType' => "ID_ISIN", 'idValue' => "$first->isin", 'exchCode' => $first->exchange);
                 } else {
-                    $requestBody[] = array('idType' => "ID_ISIN", 'idValue' => "$first->isin");
+                    $requestBody = array('idType' => "ID_ISIN", 'idValue' => "$first->isin");
                 }
 
-                $stock = new Stock;
-                $stock->isin = $first->isin;
-                $stock->exchange = $first->exchange;
-                $stock->volume_of_shares = $volume_of_shares;
-                $stock->ps_avg_price_purchased = $ps_avg_price_purchased;
-                $stock->service_fees = $total_service_fee;
-                $stock->currency = $first->currency;
-                $stocks[] = $stock;
+                $symbol = array();
+                $symbol['isin'] = $first->isin;
+                $symbol['exchange'] = $first->exchange;
+                $symbol['requestBody'] = $requestBody;
+                $symbols[] = $symbol;
             }
         }
 
-        return array($stocks, $requestBody);
+        return $symbols;
     }
 
-    private function mapRemoteResponse($stocks, $responseBody): array
+    private function mapRemoteResponse($symbols, $responseBody): array
     {
         $responseDataSet = array_column(json_decode($responseBody, true), 'data');
 
         for ($i = 0; $i < count($responseDataSet); $i++) {
-            $remoteTickerObjectData = $responseDataSet[$i][0];
-            $appendix = $this->getAppendix($stocks[$i]->exchange);
-            $tickerSymbol = "";
+            $remoteTickerObjectData = $responseDataSet[$i][0]; // assuming first one is correct
+
+            $appendix = $this->getSymbolAppendix($remoteTickerObjectData['exchCode']);
+            $symbol = "";
 
             // skip adding ETF's to the ticker list
             if (!strcasecmp($remoteTickerObjectData['securityType'], "Common Stock")) {
                 if (!empty($appendix)) {
-                    $tickerSymbol = $remoteTickerObjectData['ticker'] . "." . $appendix;
+                    $symbol = $remoteTickerObjectData['ticker'] . "." . $appendix;
                 } else {
-                    $tickerSymbol = $remoteTickerObjectData['ticker'];
+                    $symbol = $remoteTickerObjectData['ticker'];
                 }
             }
 
-            // map the imported transactions to a symbol
-            $stocks[$i]->symbol = $tickerSymbol;
+            $symbols[$i]['symbol'] = $symbol;
         }
 
-        return (array_filter($stocks, function ($value) {
-            return !empty($value->symbol);
+        $result = (array_filter($symbols, function ($symbol) {
+            return !empty($symbol['symbol']);
         }));
+
+        $this->transactionRepo->saveTransactions($result);
+
+        return array_column($result, 'symbol');
     }
 
-    private function getBBExchangeCode($giro_exchange): string
+    private function getSymbolAppendix($exchCode): string
     {
-        switch (strtoupper($giro_exchange)) {
-            case "EAM":
-                return "NA";
-            case "EPA":
-                return "FP";
-            case "XET":
-                return "GY";
-            case "NSY":
-            case "NDQ":
-                return "US";
-            default:
-                return "";
-        }
-    }
-
-    private function getAppendix($exchange): string
-    {
-        switch (strtoupper($exchange)) {
-            case "EAM":
+        switch (strtoupper($exchCode)) {
+            case "NA":
                 return "AS";
-            case "EPA":
+            case "FP":
                 return "PA";
-            case "XET":
+            case "GY":
                 return "DE";
             default:
                 return "";

@@ -45,8 +45,6 @@ class ProfileRepository
             $profile['price'] = $this->curRep->convertToEur($profile['currency'], $profile['price']);
             Profile::updateOrCreate($matcher, $profile);
         }
-
-        return $profilesQuery->get()->fresh();
     }
 
     private function isCacheStale($profile): bool

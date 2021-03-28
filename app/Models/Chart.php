@@ -23,11 +23,12 @@ class Chart extends Model
 
     private function buildLabels(): array
     {
-        $labels = $this->stocks->unique('stock_sector');
+        $stocks = $this->stocks->unique('profile.sector');
 
         $result = array();
-        foreach ($labels as $value) {
-            $result[] = mb_strimwidth(strtolower($value->stock_sector), 0, 30, "...");
+        foreach ($stocks as $stock) {
+            $profile = $stock->firstProfile();
+            $result[] = mb_strimwidth(strtolower($profile->sector), 0, 30, "...");
         }
         return $result;
     }
@@ -35,7 +36,7 @@ class Chart extends Model
     private function buildData(): array
     {
         $result = array();
-        foreach ($this->stocks->groupBy('stock_sector') as $sector) {
+        foreach ($this->stocks->groupBy('profile.sector') as $sector) {
             $result[] = $sector->sum('stock_weight');
         }
         return $result;

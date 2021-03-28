@@ -5,37 +5,38 @@ namespace App\Remote;
 
 use App\Models\Portfolio;
 use App\Models\Stock;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class StockRepository
 {
 
-    public function calculateStockIndicators($stocks, $profiles, $totalPortfolioValue): array
+    public function buildStocks($allTransactions, $totalPortfolioValue): Collection
     {
-        $stocks = array_map(function ($stock) use ($profiles, $totalPortfolioValue) {
-            $volume = $stock->volume_of_shares;
-            $gak = $stock->ps_avg_price_purchased;
-            $price = $stock->ps_current_value;
+        $stocks = $allTransactions->map(function ($transactionsForStock) use ($totalPortfolioValue) {
+            $volume = $transactionsForStock->sum('quantity');
+            if ($volume === 0) return null; // skip fully sold stocks
 
-            // calculate indicators
-            $stock->stock_current_value = round($price * $volume, 2);
-            $stock->ps_profit = round(($price - $gak) * $volume, 2);
-            $stock->ps_profit_percentage = round(($stock->ps_profit / ($gak * $volume)) * 100, 2);
-            $stock->stock_invested = ($volume * $gak) - $stock->service_fees;
-            $stock->stock_weight = round(($stock->stock_current_value / $totalPortfolioValue) * 100, 2);
+            $profile = $transactionsForStock[0]->firstProfile();
+            $gak = round($transactionsForStock->sum('closing_rate') / count($transactionsForStock), 2);
+            $service_fees = round($transactionsForStock->sum('service_fee'), 2);
+            $price = $profile->price;
+            $stock_current_value = round($price * $volume, 2);
+            $ps_profit = round(($price - $gak) * $volume, 2);
 
-            // add profile info to stocklist
-            foreach ($profiles as $profile) {
-                if ($stock->symbol == $profile->symbol) {
-                    $stock->stock_name = $profile->companyName;
-                    $stock->stock_sector = $profile->sector;
-                    $stock->ps_current_value = $profile->price;
-                    $stock->image = $profile->image;
-                }
-            }
+            $stock = new Stock;
+            $stock->symbol = $profile->symbol;
+            $stock->volume_of_shares = $volume;
+            $stock->ps_avg_price_purchased = $gak;
+            $stock->service_fees = $service_fees;
+            $stock->stock_current_value = $stock_current_value;
+            $stock->ps_profit = $ps_profit;
+            $stock->ps_profit_percentage = round(($ps_profit / ($gak * $volume)) * 100, 2);
+            $stock->stock_invested = ($volume * $gak) - $service_fees;
+            $stock->stock_weight = round(($stock_current_value / $totalPortfolioValue) * 100, 2);
 
             return $stock;
-        }, $stocks);
+        })->reject(function ($stock) { return empty($stock); });
 
         $this->saveStocks($stocks);
 

@@ -87,16 +87,17 @@
                             </thead>
                             <tbody>
                             @forelse ($portfolio->stocks as $stock)
-                                <tr>
+
+                                <tr data-toggle="modal" data-target="#modal-responsive{{$stock->id}}">
                                     <td>
                                         <div class="card" style="width: 1.5rem;">
-                                            <img class="card-img mx-auto d-block" src="{{$stock['image']}}">
+                                            <img class="card-img mx-auto d-block" src="{{$stock->firstProfile()->image}}">
                                         </div>
                                     </td>
-                                    <td>{{$stock['stock_name']}}</td>
+                                    <td>{{$stock->firstProfile()->companyName}}</td>
                                     <td>{{$stock['volume_of_shares']}}</td>
                                     <td>€{{$stock['ps_avg_price_purchased']}}</td>
-                                    <td>€{{$stock['ps_current_value']}}</td>
+                                    <td>€{{$stock->firstProfile()->price}}</td>
                                     <td>€{{$stock['ps_profit']}}</td>
                                     <td>{{$stock['ps_profit_percentage']}}%</td>
                                     <td>€{{$stock['stock_current_value']}}</td>
@@ -115,8 +116,9 @@
             </div>
         </div>
     </div>
-
 @endsection
+
+{{--@each('includes.modal', $portfolio->stocks, 'stock')--}}
 
 @push('scripts')
     <script src="/js/portfolio-chart.js"></script>

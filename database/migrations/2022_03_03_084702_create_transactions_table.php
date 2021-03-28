@@ -14,6 +14,7 @@ class CreateTransactionsTable extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
+            $table->string('symbol', 255)->nullable();
             $table->string('isin', 255);
             $table->string('exchange', 255)->nullable();
             $table->integer('quantity');

@@ -36,7 +36,7 @@ class DeGiroDataImport implements ToModel, WithStartRow
                 'purchased_time' => $row[1],
                 'product' => $row[2],
                 'isin' => $row[3],
-                'exchange' => $row[4],
+                'exchange' => $this->getExchCode($row[4]),
                 'place_of_execution' => $row[5],
                 'quantity' => $row[6],
                 'closing_rate' => $this->curRep->convertToEur($row[8], str_replace(',', '.', $row[7])),
@@ -58,5 +58,22 @@ class DeGiroDataImport implements ToModel, WithStartRow
     public function startRow(): int
     {
         return 2;
+    }
+
+    private function getExchCode($deGiroExchange): string
+    {
+        switch (strtoupper($deGiroExchange)) {
+            case "EAM":
+                return "NA";
+            case "EPA":
+                return "FP";
+            case "XET":
+                return "GY";
+            case "NSY":
+            case "NDQ":
+                return "US";
+            default:
+                return "";
+        }
     }
 }

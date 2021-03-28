@@ -13,6 +13,7 @@ class Transaction extends Model
     protected $table = 'transactions';
 
     protected $fillable = [
+        'symbol',
         'isin',
         'exchange',
         'quantity',
@@ -24,5 +25,10 @@ class Transaction extends Model
 
     function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function firstProfile()
+    {
+        return $this->hasOne(Profile::class, 'symbol', 'symbol')->get()->first();
     }
 }

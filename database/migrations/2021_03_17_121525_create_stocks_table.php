@@ -16,21 +16,14 @@ class CreateStocksTable extends Migration
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
             $table->string('symbol', 10)->nullable();
-            $table->string('isin', 255)->nullable();
-            $table->string('exchange', 255)->nullable()->default('');
-            $table->string('stock_name', 255)->nullable()->default('');
-            $table->string('stock_sector', 255)->nullable()->default('');
             $table->integer('volume_of_shares')->nullable()->default(0);
             $table->float('ps_avg_price_purchased')->nullable()->default(0);
-            $table->float('ps_current_value')->nullable()->default(0);
             $table->float('ps_profit')->nullable()->default(0);
             $table->float('ps_profit_percentage')->nullable()->default(0);
             $table->float('stock_current_value')->nullable()->default(0);
             $table->float('stock_weight')->nullable()->default(0);
             $table->float('stock_invested')->nullable()->default(0);
             $table->float('service_fees')->nullable()->default(0);
-            $table->string('currency', 5)->nullable()->default('');
-            $table->string('image', 255)->nullable()->default('');
             $table->foreignId('portfolio_id')->constrained('portfolio');
             $table->timestamps();
         });
