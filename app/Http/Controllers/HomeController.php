@@ -3,12 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Dashboard\DashboardBuilder;
-use App\Models\Chart;
-use App\Models\Portfolio;
-use App\Remote\PortfolioRepository;
-use App\Remote\ProfileRepository;
-use App\Remote\StockRepository;
-use App\Remote\SymbolRepository;
 use App\Remote\TransactionRepository;
 
 class HomeController extends Controller

@@ -118,8 +118,6 @@
     </div>
 @endsection
 
-{{--@each('includes.modal', $portfolio->stocks, 'stock')--}}
-
 @push('scripts')
     <script src="/js/portfolio-chart.js"></script>
     <script src="/js/portfolio-datatable.js"></script>
