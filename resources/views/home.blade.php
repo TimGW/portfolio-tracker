@@ -75,35 +75,32 @@
                             <thead>
                             <tr>
                                 <th class="no-sort"></th>
-                                <th>Bedrijf</th>
-                                <th>Aantal</th>
-                                <th>GAK</th>
+                                <th style="width: 30%">Bedrijf</th>
                                 <th>Koers</th>
-                                <th>Winst</th>
-                                <th>Groei</th>
                                 <th>Waarde</th>
+                                <th>Winst (ong.)</th>
+                                <th>Groei</th>
                                 <th>Gewicht</th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse ($portfolio->stocks as $stock)
-
-                                <tr data-toggle="modal" data-target="#modal-responsive{{$stock->id}}">
+                                <tr data-toggle="modal" data-id="{{$stock->id}}"
+                                    data-target="#modal-responsive{{$stock->id}}">
                                     <td>
                                         <div class="card" style="width: 1.5rem;">
-                                            <img class="card-img mx-auto d-block" src="{{$stock->firstProfile()->image}}">
+                                            <img class="card-img mx-auto d-block"
+                                                 src="{{$stock->firstProfile()->image}}">
                                         </div>
                                     </td>
                                     <td>{{$stock->firstProfile()->companyName}}</td>
-                                    <td>{{$stock['volume_of_shares']}}</td>
-                                    <td>€{{$stock['ps_avg_price_purchased']}}</td>
-                                    <td>€{{$stock->firstProfile()->price}}</td>
-                                    <td>€{{$stock['ps_profit']}}</td>
-                                    <td>{{$stock['ps_profit_percentage']}}%</td>
-                                    <td>€{{$stock['stock_current_value']}}</td>
+                                    <td>€{{ number_format($stock->firstProfile()->price, 2, ',', '.') }}</td>
+                                    <td>€{{ number_format($stock->stock_current_value, 2, ',', '.') }}</td>
+                                    <td>€{{ number_format($stock->ps_profit, 2, ',', '.') }}</td>
+                                    <td>{{ number_format($stock->ps_profit_percentage, 2, ',', '.') }}%</td>
                                     <td data-order="{{$stock['stock_weight']}}">
                                         <progress value="{{$stock['stock_weight']}}" max="100"></progress>
-                                        &nbsp;{{$stock['stock_weight']}}%
+                                        &nbsp;{{ number_format($stock->stock_weight, 2, ',', '.') }}%
                                     </td>
                                 </tr>
                             @empty
@@ -116,6 +113,8 @@
             </div>
         </div>
     </div>
+    @each('includes.modal', $portfolio->stocks, 'stock', 'empty')
+
 @endsection
 
 @push('scripts')

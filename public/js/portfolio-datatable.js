@@ -11,9 +11,9 @@ $(function () {
         },
         rowCallback: function(row, data, index){
             if(data[6] < "0"){
-                $(row).find('td:eq(6)').css('color', 'red');
+                $(row).find('td:eq(5)').css('color', 'red');
             } else if(data[6] > "0.0") {
-                $(row).find('td:eq(6)').css('color', 'green');
+                $(row).find('td:eq(5)').css('color', 'green');
             }
         }
     });
