@@ -16,10 +16,10 @@ class PortfolioRepository
         $total_profit = $stocks->sum('ps_profit');
 
         $portfolio = new Portfolio;
-        $portfolio->total_invested = round($total_invested);
-        $portfolio->total_profit =  round($total_profit);
-        $portfolio->total_growth = round(($total_profit / $total_invested) * 100, 2);
-        $portfolio->total_current_value = round($totalPortfolioValue);
+        $portfolio->total_invested = $total_invested;
+        $portfolio->total_profit = $total_profit;
+        $portfolio->total_growth = ($total_profit / $total_invested) * 100;
+        $portfolio->total_current_value = $totalPortfolioValue;
 
         $matcher = ['user_id' => Auth::id()];
         return Portfolio::updateOrCreate($matcher, [

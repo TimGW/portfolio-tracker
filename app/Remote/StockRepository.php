@@ -18,11 +18,11 @@ class StockRepository
             if ($volume === 0) return null; // skip fully sold stocks
 
             $profile = $transactionsForStock[0]->firstProfile();
-            $gak = round($transactionsForStock->sum('closing_rate') / count($transactionsForStock), 2);
-            $service_fees = round($transactionsForStock->sum('service_fee'), 2);
+            $gak = $transactionsForStock->sum('closing_rate') / count($transactionsForStock);
+            $service_fees = $transactionsForStock->sum('service_fee');
             $price = $profile->price;
-            $stock_current_value = round($price * $volume, 2);
-            $ps_profit = round(($price - $gak) * $volume, 2);
+            $stock_current_value = $price * $volume;
+            $ps_profit = ($price - $gak) * $volume;
 
             $stock = new Stock;
             $stock->symbol = $profile->symbol;
@@ -31,9 +31,9 @@ class StockRepository
             $stock->service_fees = $service_fees;
             $stock->stock_current_value = $stock_current_value;
             $stock->ps_profit = $ps_profit;
-            $stock->ps_profit_percentage = round(($ps_profit / ($gak * $volume)) * 100, 2);
+            $stock->ps_profit_percentage = ($ps_profit / ($gak * $volume)) * 100;
             $stock->stock_invested = ($volume * $gak) - $service_fees;
-            $stock->stock_weight = round(($stock_current_value / $totalPortfolioValue) * 100, 2);
+            $stock->stock_weight = ($stock_current_value / $totalPortfolioValue) * 100;
 
             return $stock;
         })->reject(function ($stock) { return empty($stock); });

@@ -60,6 +60,6 @@ class DashboardBuilder
             $result += $price * $volumeOfShares;
         }
 
-        return round($result, 2);
+        return $result;
     }
 }

@@ -21,7 +21,7 @@
                 <div class="card text-center bg-info text-white">
                     <div class="card-body">
                         <p class="card-text">{{ __('Balans') }}</p>
-                        <h3 class="card-title">€{{ $portfolio->total_current_value ?: 0 }}</h3>
+                        <h3 class="card-title">€{{ number_format($portfolio->total_current_value, 0, ',', '.') }}</h3>
                     </div>
                 </div>
             </div>
@@ -29,7 +29,7 @@
                 <div class="card text-center bg-info text-white">
                     <div class="card-body">
                         <p class="card-text">{{ __('Winst (ong.)') }}</p>
-                        <h3 class="card-title">€{{ $portfolio->total_profit ?: 0 }}</h3>
+                        <h3 class="card-title">€{{ number_format($portfolio->total_profit, 0, ',', '.') }}</h3>
 
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                 <div class="card text-center bg-info text-white">
                     <div class="card-body">
                         <p class="card-text">{{ __('Groei') }}</p>
-                        <h3 class="card-title">{{ $portfolio->total_growth ?: 0 }}%</h3>
+                        <h3 class="card-title">{{ number_format($portfolio->total_growth, 2, ',', '.') }}%</h3>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                 <div class="card text-center bg-info text-white">
                     <div class="card-body">
                         <p class="card-text">{{ __('Geïnvesteerd') }}</p>
-                        <h3 class="card-title">€{{ $portfolio->total_invested ?: 0 }}</h3>
+                        <h3 class="card-title">€{{ number_format($portfolio->total_invested, 0, ',', '.') }}</h3>
                     </div>
                 </div>
             </div>

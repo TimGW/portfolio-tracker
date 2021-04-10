@@ -10,8 +10,9 @@
                             <img class="card-img" src="{{ $stock->firstProfile()->image }}">
                         </div>
 
-                        <h5 id="companyName" class="modal-title mr-2">{{ $stock->firstProfile()->companyName }}</h5>
-                        [{{ $stock->firstProfile()->symbol }}]
+                        <h4 id="companyName" class="modal-title mr-2">{{ $stock->firstProfile()->companyName }}
+                            <small class="text-muted"> [{{ $stock->firstProfile()->symbol }}]</small>
+                        </h4>
                     </div>
                 </div>
 
@@ -48,12 +49,14 @@
                     </tr>
                     <tr>
                         <td>Gemiddelde aankooppijs (GAK)</td>
-                        <td class="text-right">€ {{ number_format($stock->ps_avg_price_purchased, 2, ',', '.') }}
+                        <td class="text-right">€{{ number_format($stock->ps_avg_price_purchased, 2, ',', '.') }}
                         </td>
                     </tr>
                     <tr>
-                        <td>Huidige aandelprijs</td>
-                        <td class="text-right">€ {{ number_format($stock->firstProfile()->price, 2, ',', '.') }}</td>
+                        <td>Huidig aandeelprijs<br>
+                            <small class="text-muted">Laatst geüpdatet: {{ \Carbon\Carbon::parse($stock->firstProfile()->updated_at)->diffForhumans() }}</small>
+                        </td>
+                        <td class="text-right">€{{ number_format($stock->firstProfile()->price, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td>Totaal geïnvesteerd</td>
@@ -61,7 +64,7 @@
                     </tr>
                     <tr>
                         <td>Gemaakte transactiekosten</td>
-                        <td class="text-right">- € {{ number_format($stock->service_fees, 2, ',', '.') }}</td>
+                        <td class="text-right">- €{{ number_format($stock->service_fees, 2, ',', '.') }}</td>
                     </tr>
                 </table>
 
@@ -69,7 +72,7 @@
                 <table class="table table-hover responsive nowrap w-100">
                     <tr>
                         <td>Huidige waarde</td>
-                        <td class="text-right">€ {{ number_format($stock->stock_current_value, 2, ',', '.') }}</td>
+                        <td class="text-right">€{{ number_format($stock->stock_current_value, 2, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td>Gewicht in portfolio</td>
@@ -81,18 +84,18 @@
                     <tr>
                         <td>Winst / verlies</td>
                         @if($stock->ps_profit_percentage > 0)
-                            <td class="text-right">€ {{ $stock->ps_profit }} &nbsp;&nbsp;
+                            <td class="text-right">€{{ $stock->ps_profit }} &nbsp;&nbsp;
                                 ↑ {{ number_format($stock->ps_profit_percentage, 2, ',', '.') }}%
                             </td>
                         @else
-                            <td class="text-right">€ {{  number_format($stock->ps_profit, 2, ',', '.') }} &nbsp;&nbsp;
+                            <td class="text-right">€{{  number_format($stock->ps_profit, 2, ',', '.') }} &nbsp;&nbsp;
                                 ↓ {{ number_format($stock->ps_profit_percentage, 2, ',', '.') }}%
                             </td>
                         @endif
                     </tr>
                     <tr>
                         <td>Laagst / hoogst</td>
-                        <td class="text-right">€ {{ $stock->firstProfile()->range }}</td>
+                        <td class="text-right">€{{ $stock->firstProfile()->range }}</td>
                     </tr>
                 </table>
 
@@ -104,7 +107,7 @@
                     </tr>
                     <tr>
                         <td>Market cap</td>
-                        <td class="text-right">{{ number_format($stock->firstProfile()->mktCap, 0, ',', '.') }}</td>
+                        <td class="text-right">€{{ number_format($stock->firstProfile()->mktCap, 0, ',', '.') }}</td>
                     </tr>
                     <tr>
                         <td>Industrie</td>
