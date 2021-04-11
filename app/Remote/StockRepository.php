@@ -22,7 +22,7 @@ class StockRepository
             $service_fees = $transactionsForStock->sum('service_fee');
             $price = $profile->price;
             $stock_current_value = $price * $volume;
-            $ps_profit = ($price - $gak) * $volume;
+            $ps_profit = (($price - $gak) * $volume) - $service_fees;
 
             $stock = new Stock;
             $stock->symbol = $profile->symbol;
@@ -32,7 +32,7 @@ class StockRepository
             $stock->stock_current_value = $stock_current_value;
             $stock->ps_profit = $ps_profit;
             $stock->ps_profit_percentage = ($ps_profit / ($gak * $volume)) * 100;
-            $stock->stock_invested = ($volume * $gak) - $service_fees;
+            $stock->stock_invested = ($volume * $gak) + $service_fees;
             $stock->stock_weight = ($stock_current_value / $totalPortfolioValue) * 100;
 
             return $stock;
