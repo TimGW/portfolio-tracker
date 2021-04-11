@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Auth;
 
 class Stock extends Model
 {
@@ -38,5 +39,10 @@ class Stock extends Model
     public function firstProfile()
     {
         return $this->profile()->get()->first();
+    }
+
+    public function transactions()
+    {
+        return Transaction::where('symbol', $this->symbol)->get();
     }
 }
