@@ -15,10 +15,10 @@ class CreatePortfolioTable extends Migration
     {
         Schema::create('portfolio', function (Blueprint $table) {
             $table->id();
-            $table->float('total_current_value')->default(0);
-            $table->float('total_growth')->default(0);
-            $table->float('total_invested')->default(0);
-            $table->float('total_profit')->default(0);
+            $table->decimal('total_current_value')->default(0);
+            $table->decimal('total_growth')->default(0);
+            $table->decimal('total_invested')->default(0);
+            $table->decimal('total_profit')->default(0);
             $table->string('currency', 5)->nullable()->default('');
             $table->foreignId('user_id')->constrained('users');
             $table->timestamps();

@@ -16,13 +16,13 @@ class CreateProfilesTable extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->id();
             $table->string('symbol', 255);
-            $table->float('price')->nullable();
-            $table->float('beta')->nullable();
+            $table->decimal('price')->nullable();
+            $table->decimal('beta')->nullable();
             $table->bigInteger('volAvg')->nullable();
             $table->bigInteger('mktCap')->nullable();
-            $table->float('lastDiv')->nullable();
+            $table->decimal('lastDiv')->nullable();
             $table->string('range', 255)->nullable();
-            $table->float('changes')->nullable();
+            $table->decimal('changes')->nullable();
             $table->string('companyName', 255)->nullable();
             $table->string('currency', 255)->nullable();
             $table->string('cik', 255)->nullable();
@@ -42,8 +42,8 @@ class CreateProfilesTable extends Migration
             $table->string('city', 255)->nullable();
             $table->string('state', 255)->nullable();
             $table->string('zip', 255)->nullable();
-            $table->float('dcfDiff')->nullable();
-            $table->float('dcf')->nullable();
+            $table->decimal('dcfDiff')->nullable();
+            $table->decimal('dcf')->nullable();
             $table->string('image', 255)->nullable();
             $table->string('ipoDate', 255)->nullable();
             $table->boolean('defaultImage')->nullable();

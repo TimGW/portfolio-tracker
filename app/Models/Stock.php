@@ -36,6 +36,11 @@ class Stock extends Model
         return $this->hasOne(Profile::class, 'symbol', 'symbol');
     }
 
+    public function metrics()
+    {
+        return $this->hasOne(Metrics::class, 'symbol', 'symbol');
+    }
+
     public function firstProfile()
     {
         return $this->profile()->get()->first();
