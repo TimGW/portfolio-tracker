@@ -22,6 +22,6 @@ Auth::routes([
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/wishlist', [App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist');
+Route::get('/watchlist', [App\Http\Controllers\WatchlistController::class, 'index'])->name('watchlist');
 
 Route::post('/import', [DeGiroDataImportController::class, 'import'])->name('import');

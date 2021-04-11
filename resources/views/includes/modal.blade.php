@@ -154,9 +154,8 @@
                             <thead>
                             <tr>
                                 <th>Aantal</th>
-                                <th>Aankoopprijs</th>
+                                <th>Prijs</th>
                                 <th>Servicekosten</th>
-                                <th>Valuta</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -169,7 +168,6 @@
                                     <td>
                                         €{{ number_format($transaction->service_fee, 2, ',', '.') }}
                                     </td>
-                                    <td>{{ $transaction->currency }}</td>
                                 </tr>
                             @empty
                                 <tr>Geen data beschikbaar</tr>

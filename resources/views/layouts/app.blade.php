@@ -51,12 +51,20 @@
 
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item dropdown">
-                        <a class="btn" href="{{ route('home') }}">{{ __('Home') }}</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="btn disabled" href="{{ route('wishlist') }}">{{ __('Wishlist') }}</a>
-                    </li>
+                    @auth
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" role="button" href="{{ url('/') }}">{{ __('Home') }}</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" role="button"
+                               href="{{ route('watchlist') }}">{{ __('Watchlist') }}</a>
+                        </li>
+
+                    @else
+                        <a class="navbar-brand" href="{{ url('/') }}">
+                            {{ config('app.name', 'Portfolio Tracker') }}
+                        </a>
+                    @endauth
                 </ul>
 
                 <!-- Right Side Of Navbar -->

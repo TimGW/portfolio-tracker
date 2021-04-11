@@ -7,7 +7,7 @@ use App\Models\Stock;
 use App\Remote\MetricsRepository;
 use App\Remote\TransactionRepository;
 
-class WishlistController extends Controller
+class WatchlistController extends Controller
 {
     /**
      * @var TransactionRepository
@@ -35,6 +35,6 @@ class WishlistController extends Controller
 
         $this->metricsRepository->fetchMetrics(["AAPL"]);
 
-        return view('wishlist');
+        return view('watchlist');
     }
 }
