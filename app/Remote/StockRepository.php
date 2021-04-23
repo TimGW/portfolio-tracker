@@ -5,6 +5,7 @@ namespace App\Remote;
 
 use App\Models\Portfolio;
 use App\Models\Stock;
+use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
@@ -45,12 +46,12 @@ class StockRepository
 
     private function saveStocks($stocks)
     {
-        $portfolioId = Portfolio::firstWhere('user_id', Auth::id())->id;
+        $portfolio = Portfolio::firstOrCreate(['user_id' => Auth::id()]);
         $array = json_decode(json_encode($stocks), true);
 
         foreach ($array as $stock) {
             Stock::updateOrCreate(
-                ['portfolio_id' => $portfolioId, 'symbol' => $stock['symbol']],
+                ['portfolio_id' => $portfolio->id, 'symbol' => $stock['symbol']],
                 $stock
             );
         }

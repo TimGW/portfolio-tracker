@@ -21,7 +21,7 @@ class CreateTransactionsTable extends Migration
             $table->decimal('closing_rate')->nullable();
             $table->decimal('service_fee')->nullable();
             $table->string('currency', 255);
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

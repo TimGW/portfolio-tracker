@@ -6,7 +6,6 @@ namespace App\Dashboard;
 
 use App\Models\Chart;
 use App\Models\Dashboard;
-use App\Models\Portfolio;
 use App\Remote\PortfolioRepository;
 use App\Remote\ProfileRepository;
 use App\Remote\StockRepository;
@@ -33,7 +32,7 @@ class DashboardBuilder
     public function buildDashboard(): Dashboard
     {
         // build tickers and fetch remote stock data
-        $symbols = $this->symbolRepository->buildSymbols();
+        $symbols = $this->symbolRepository->buildSymbols(); // fixme improve load time
         $this->profileRepository->fetchProfiles($symbols);
 
         // retrieve all transactions

@@ -20,7 +20,7 @@ class CreatePortfolioTable extends Migration
             $table->decimal('total_invested')->default(0);
             $table->decimal('total_profit')->default(0);
             $table->string('currency', 5)->nullable()->default('');
-            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

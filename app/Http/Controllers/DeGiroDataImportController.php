@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Imports\DeGiroDataImport;
+use App\Models\Portfolio;
 use App\Models\Transaction;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
 class DeGiroDataImportController extends Controller
@@ -24,6 +24,7 @@ class DeGiroDataImportController extends Controller
     {
         // remove current entries
         Transaction::where('user_id', Auth::id())->delete();
+        Portfolio::where('user_id', Auth::id())->delete();
 
         // import new entries
         Excel::import(new DeGiroDataImport, request()->file('file'));

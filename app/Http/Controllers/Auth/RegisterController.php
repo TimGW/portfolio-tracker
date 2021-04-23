@@ -73,14 +73,6 @@ class RegisterController extends Controller
             'password' => Hash::make($data['password']),
         ]);
 
-        Portfolio::create([
-            'total_current_value' => 0.0,
-            'total_growth' => 0.0,
-            'total_invested' => 0.0,
-            'total_profit' => 0.0,
-            'user_id' => $user->id
-        ]);
-
         return $user;
     }
 }

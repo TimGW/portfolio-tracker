@@ -24,7 +24,7 @@ class CreateStocksTable extends Migration
             $table->decimal('stock_weight')->nullable()->default(0);
             $table->decimal('stock_invested')->nullable()->default(0);
             $table->decimal('service_fees')->nullable()->default(0);
-            $table->foreignId('portfolio_id')->constrained('portfolio');
+            $table->foreignId('portfolio_id')->constrained('portfolio')->onDelete('cascade');
             $table->timestamps();
         });
     }
